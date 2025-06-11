@@ -1,0 +1,16 @@
+# This is a config for E2B sandbox template.
+# You can use template ID (ieqzmp83lrci4exwqfts) or template name (composer) to create a sandbox:
+
+# Python SDK
+# from e2b import Sandbox, AsyncSandbox
+# sandbox = Sandbox("composer") # Sync sandbox
+# sandbox = await AsyncSandbox.create("composer") # Async sandbox
+
+# JS SDK
+# import { Sandbox } from 'e2b'
+# const sandbox = await Sandbox.create('composer')
+
+team_id = "f0c63627-e099-4318-bb31-a4066631cff7"
+dockerfile = "e2b.Dockerfile"
+template_name = "composer"
+template_id = "ieqzmp83lrci4exwqfts"
