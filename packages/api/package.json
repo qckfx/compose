@@ -15,7 +15,9 @@
     "e2b": "^1.5.2",
     "fastify": "^5.3.3",
     "prisma": "^6.9.0",
-    "uuid": "^11.1.0"
+    "tiptap-markdown": "^0.8.10",
+    "uuid": "^11.1.0",
+    "zod": "^3.25.61"
   },
   "devDependencies": {
     "@types/node": "^20.12.11",

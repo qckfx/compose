@@ -1,36 +1,44 @@
-import { useEffect, useState, useRef } from "react";
-import { useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import TipTapEditor from "@/components/TipTapEditor";
 
 export default function DocView() {
   const { id } = useParams<{ id: string }>();
   const [content, setContent] = useState("Loading…");
-  const wsRef = useRef<WebSocket | null>(null);
+  const navigate = useNavigate();
 
   // ❶ fetch persisted content once
   useEffect(() => {
+    let cancelled = false;
+
     fetch(`/api/doc/${id}`)
-      .then((r) => r.json())
-      .then((d) => setContent(d.content ?? ""));
-  }, [id]);
+      .then(async (r) => {
+        if (r.status === 404) {
+          navigate("/not-found", { replace: true });
+          throw new Error("not-found");
+        }
+        return r.json();
+      })
+      .then((d) => {
+        if (!cancelled) {
+          setContent(d.content ?? "");
+        }
+      })
+      .catch((err) => {
+        // Swallow navigation-triggered error or display generic message
+        console.error(err);
+        if (err.message !== "not-found" && !cancelled) {
+          setContent("Failed to load document");
+        }
+      });
 
-  // ❷ open websocket for live updates
-  useEffect(() => {
-    const ws = new WebSocket(`ws://${location.host}/api/ws/${id}`);
-    wsRef.current = ws;
-
-    ws.onmessage = (ev) => {
-      const msg = JSON.parse(ev.data);
-      if (msg.type === "draft") {
-        setContent(msg.content);
-      }
-      /* later: status, patches, comments, etc. */
+    return () => {
+      cancelled = true;
     };
-    return () => ws.close();
-  }, [id]);
+  }, [id, navigate]);
 
   return (
-    <div className="p-8 max-w-2xl mx-auto flex flex-col gap-4 w-full h-full">
+    <div className="p-4 sm:p-8 w-full h-full flex flex-col gap-4">
       <TipTapEditor docId={id!} initialContent={content} />
     </div>
   );

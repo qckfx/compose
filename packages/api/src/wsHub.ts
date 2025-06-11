@@ -2,7 +2,8 @@ import { WebSocket } from "@fastify/websocket";
 import { FastifyInstance } from "fastify";
 
 type Conn = WebSocket & { isAlive: boolean };
-export const sockets = new Map<string, Conn>();
+// Store **all** open WebSocket connections per docId so broadcasts reach every client.
+export const sockets = new Map<string, Set<Conn>>();
 
 export function registerWsRoute(fastify: FastifyInstance) {
   fastify.get("/api/ws/:id", { websocket: true }, (socket, req) => {
@@ -10,18 +11,33 @@ export function registerWsRoute(fastify: FastifyInstance) {
     const id = (req.params as any).id as string;
     const conn = socket as Conn;
     conn.isAlive = true; // mark as alive on connect
-    sockets.set(id, conn);
+
+    // Add the connection to the set for this doc id (create set if first)
+    const set = sockets.get(id);
+    if (set) {
+      set.add(conn);
+    } else {
+      sockets.set(id, new Set([conn]));
+    }
 
     socket.on("pong", () => (conn.isAlive = true));
-    socket.on("close", () => sockets.delete(id));
+    socket.on("close", () => {
+      const set = sockets.get(id);
+      if (set) {
+        set.delete(conn);
+        if (!set.size) sockets.delete(id);
+      }
+    });
   });
 
   // heartbeat
   setInterval(() => {
-    sockets.forEach((c) => {
-      if (!c.isAlive) return c.terminate();
-      c.isAlive = false;
-      c.ping();
+    sockets.forEach((conns) => {
+      conns.forEach((c) => {
+        if (!c.isAlive) return c.terminate();
+        c.isAlive = false;
+        c.ping();
+      });
     });
   }, 30_000);
 }

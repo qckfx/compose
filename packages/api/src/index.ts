@@ -3,8 +3,10 @@ import cors from "@fastify/cors";
 import fastifyWebsocket from "@fastify/websocket";
 import { registerWsRoute } from "./wsHub.js";
 import { startDraftRoute } from "./routes/startDraft.js";
+import { commentRoutes } from "./routes/comments.js";
 import prismaPlugin from "./plugins/prisma.js";
 import dotenv from "dotenv";
+
 dotenv.config();
 
 const app = Fastify({
@@ -21,6 +23,7 @@ await app.register(prismaPlugin);
 
 registerWsRoute(app);
 startDraftRoute(app);
+commentRoutes(app);
 
 app.get("/api/ping", async () => ({ ok: true, ts: Date.now() }));
 

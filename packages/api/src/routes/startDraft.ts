@@ -64,13 +64,15 @@ async function runAgentJob({
   });
   app.log.debug("Design Document:\n" + designDoc);
 
-  const socket = sockets.get(sessionId);
-  if (socket) {
-    socket.send(
-      JSON.stringify({
-        type: "draft",
-        content: designDoc,
-      }),
+  const conns = sockets.get(sessionId);
+  if (conns) {
+    conns.forEach((conn) =>
+      conn.send(
+        JSON.stringify({
+          type: "draft",
+          content: designDoc,
+        }),
+      ),
     );
   }
 
