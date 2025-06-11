@@ -1,9 +1,24 @@
 {
-  "$schema": "https://turborepo.org/schema.json",
-  "pipeline": {
-    "dev": { "dependsOn": ["^dev"], "parallel": true },
-    "build": { "dependsOn": ["^build"], "outputs": ["dist/**"] },
-    "lint": { "outputs": [] }
+  "$schema": "https://turbo.build/schema.json",
+
+  "tasks": {
+    // ――― local dev servers (don’t cache, keep alive) ───────
+    "dev": {
+      "dependsOn": ["^dev"],
+      "cache": false,
+      "persistent": true      // keeps Vite / Fastify watching
+    },
+
+    // ――― production builds ─────────────────────────────────
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**"]
+    },
+
+    // ――― lint / format (no outputs) ────────────────────────
+    "lint": {
+      "outputs": []           // empty ⇒ don’t cache artefacts
+    }
   }
 }
 
