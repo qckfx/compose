@@ -55,14 +55,19 @@ async function runAgentJob({
       timeoutMs: 1000 * 60 * 20,
     },
   );
-  app.log.debug("Agent output:\n" + stdout);
 
-  const designDoc = await sandbox.files.read("repo/design-doc.md");
+  let designDoc = await sandbox.files.read("repo/design-doc.md");
+  while (!designDoc) {
+    await sandbox.commands.run(
+      'cd repo && qckfx -a ../.qckfx/design-doc.json --quiet "You MUST output the design doc to disk at ./design-doc.md. Do that now."',
+    );
+    designDoc = await sandbox.files.read("repo/design-doc.md");
+  }
+
   await app.prisma.doc.update({
     where: { id: sessionId },
     data: { content: designDoc, status: "completed" },
   });
-  app.log.debug("Design Document:\n" + designDoc);
 
   const conns = sockets.get(sessionId);
   if (conns) {
