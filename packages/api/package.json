@@ -1,0 +1,20 @@
+{
+  "name": "api",
+  "main": "dist/index.ts",
+  "packageManager": "yarn@4.9.2",
+  "type": "module",
+  "scripts": {
+    "dev": "ts-node src/index.ts",
+    "build": "tsc -p .",
+    "lint": "eslint src --ext .ts"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "fastify": "^5.3.3"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "name": "agent-runner",
+  "packageManager": "yarn@4.9.2",
+  "scripts": {
+    "dev": "ts-node src/runner.ts",
+    "build": "tsc -p ."
+  },
+  "dependencies": {
+    "e2b": "^1.5.2",
+    "uuid": "^11.1.0"
+  },
+  "devDependencies": {
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
+  }
+}
