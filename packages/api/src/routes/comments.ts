@@ -2,7 +2,7 @@ import { FastifyInstance } from "fastify";
 import { sockets } from "../wsHub.js";
 import { z } from "zod";
 
-export async function commentRoutes(app: FastifyInstance) {
+export function commentRoutes(app: FastifyInstance) {
   // fetch all comments for doc
   app.get("/api/doc/:id/comments", async (req) => {
     const { id } = req.params as any;

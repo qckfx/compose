@@ -22,13 +22,18 @@ enum DocStatus {
 
 model Doc {
   id         String   @id @default(uuid())
-  repoUrl    String
+  ghRepoId   String
   prompt     String
   content    String   @db.Text
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
   comments   Comment[]
   status     DocStatus @default(drafting)
+  userId     String
+
+  Repository Repository @relation(fields: [ghRepoId], references: [id])
+  User User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@index([userId])
 }
 
 model Comment {
@@ -44,4 +49,86 @@ model Comment {
 
   Doc Doc @relation(fields: [docId], references: [id], onDelete: Cascade)
   @@index([docId])
+}
+
+model User {
+  id                String             @id @default(uuid())
+  email             String             @unique @db.Citext
+  firstName         String?
+  lastName          String?
+  avatarUrl         String?
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @default(now()) @updatedAt
+  userInstallations UserInstallation[]
+
+  docs              Doc[]
+
+  // TODO: Consider adding a composite index (email, id) if query patterns show it's needed
+  // Monitor with pg_stat_statements to determine if this would be beneficial
+  // @@index([email, id], name: "email_id_idx")
+}
+
+/// -----------------------------------------------------------------------------
+/// GitHub integration models
+/// -----------------------------------------------------------------------------
+
+// Mirrors the possible `installation.account.type` values that appear in
+// GitHub webhook payloads.
+enum GhAccountType {
+  User
+  Organization
+  Bot
+}
+
+/// One installation of *this* GitHub App.  A single installation can cover
+/// multiple repositories but a repository can only belong to one installation
+/// of the same GitHub App.
+model GhInstallation {
+  id               String        @id @default(uuid())
+  ghInstallationId BigInt        @unique @map("gh_installation_id")
+  accountLogin     String        @map("account_login")
+  accountType      GhAccountType @map("account_type")
+  suspendedAt      DateTime?     @map("suspended_at")
+  deletedAt        DateTime?     @map("deleted_at")
+  createdAt        DateTime      @default(now()) @map("created_at")
+  updatedAt        DateTime      @updatedAt @map("updated_at")
+
+  // Relations
+  repositories      Repository[]
+  userInstallations UserInstallation[]
+
+  @@index([accountLogin])
+}
+
+/// A GitHub repository that the app can access via an installation.
+model Repository {
+  id             String   @id @default(uuid())
+  ghRepoId       BigInt   @unique @map("gh_repo_id")
+  fullName       String   @map("full_name") // e.g. "octocat/hello-world"
+  private        Boolean  @default(false)
+  disabled       Boolean  @default(false)
+  installationId String   @map("installation_id")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  installation GhInstallation   @relation(fields: [installationId], references: [id])
+  docs           Doc[]
+  
+
+  @@index([installationId])
+  @@index([private])
+  @@index([installationId, disabled])
+}
+
+/// Maps User accounts to GitHub app installations they have access to
+model UserInstallation {
+  userId         String   @map("user_id")
+  installationId String   @map("installation_id")
+  connectedAt    DateTime @default(now()) @map("connected_at")
+
+  user         User           @relation(fields: [userId], references: [id])
+  installation GhInstallation @relation(fields: [installationId], references: [id])
+
+  @@id([userId, installationId])
 }
