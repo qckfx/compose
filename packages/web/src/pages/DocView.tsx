@@ -1,10 +1,18 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import TipTapEditor from "@/components/TipTapEditor";
+import TipTapEditor from "@/components/editor/TipTapEditor";
+import LoadingSpinner from "@/components/LoadingSpinner";
+
+const DOC_LOADING_STATES = [
+  "Cloning repository...",
+  "Reading files...",
+  "Thinking...",
+  "Drafting v1...",
+];
 
 export default function DocView() {
   const { id } = useParams<{ id: string }>();
-  const [content, setContent] = useState("Loading…");
+  const [content, setContent] = useState<string>("");
   const navigate = useNavigate();
 
   // ❶ fetch persisted content once
@@ -38,8 +46,15 @@ export default function DocView() {
   }, [id, navigate]);
 
   return (
-    <div className="p-4 sm:p-8 w-full h-full flex flex-col gap-4">
+    <div className="pt-4 sm:pt-8 px-4 sm:px-8 pb-0 w-full h-screen flex flex-col gap-4 relative overflow-hidden overscroll-none">
       <TipTapEditor docId={id!} initialContent={content} />
+      {!content && (
+        <LoadingSpinner
+          states={DOC_LOADING_STATES}
+          cycleTime={4500 * 8}
+          overlay
+        />
+      )}
     </div>
   );
 }

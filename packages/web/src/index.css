@@ -10,6 +10,11 @@ html, body, #root {
   padding: 0;
   overflow-y: auto;
   overflow-x: hidden;
+  overscroll-behavior-y: none;
+}
+
+#root {
+  overscroll-behavior-y: none;
 }
 
 :root {

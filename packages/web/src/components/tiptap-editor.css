@@ -1,0 +1,14 @@
+/* tiptap-editor.css */
+.prose strong {
+  padding: 0 0.15em;
+  margin: 0 0.1em;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.prose h1, .prose h2, .prose h3 {
+  margin-top: 1.5em;
+  margin-bottom: 0.7em;
+  letter-spacing: 0.01em;
+  font-weight: 800;
+} 

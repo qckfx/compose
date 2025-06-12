@@ -1,32 +1,51 @@
 import { FastifyInstance } from "fastify";
 import { v4 as uuid } from "uuid";
 import { Sandbox } from "e2b";
+import { z } from "zod";
 import { sockets } from "../wsHub.js";
 
 export function startDraftRoute(app: FastifyInstance) {
   app.post("/api/start-draft", async (req, res) => {
-    const { repoUrl, prompt } = req.body as { repoUrl: string; prompt: string };
-    const sessionId = uuid();
+    try {
+      // Validate request body
+      const { repositoryId, repositoryName, prompt } = z
+        .object({
+          repositoryId: z.string(),
+          repositoryName: z.string(),
+          prompt: z.string().min(1),
+        })
+        .parse(req.body);
 
-    await app.prisma.doc.create({
-      data: { id: sessionId, repoUrl, prompt, content: "", status: "drafting" },
-    });
+      const { userId } = z.object({ userId: z.string() }).parse(req.auth);
 
-    runAgentJob({ app, repoUrl, prompt, sessionId }).catch((error) => {
-      app.log.error(error);
-    });
+      const repoUrl = `https://github.com/${repositoryName}.git`;
+      const sessionId = uuid();
 
-    return {
-      sessionId,
-    };
-  });
+      await app.prisma.doc.create({
+        data: {
+          id: sessionId,
+          ghRepoId: repositoryId,
+          ghRepoName: repositoryName,
+          prompt,
+          content: "",
+          status: "drafting",
+          clerkUserId: userId,
+        },
+      });
 
-  // TODO: move to a separate file that makes more sense
-  app.get("/api/doc/:id", async (req, res) => {
-    const { id } = req.params as any;
-    const doc = await app.prisma.doc.findUnique({ where: { id } });
-    if (!doc) return res.status(404).send({ error: "Not found" });
-    return doc;
+      runAgentJob({ app, repoUrl, prompt, sessionId }).catch((error) => {
+        app.log.error(error);
+      });
+
+      return { sessionId };
+    } catch (error: unknown) {
+      if ((error as Error).name === "ZodError") {
+        res.status(400).send({ error: "Invalid request payload" });
+      } else {
+        app.log.error({ error }, "Error starting draft");
+        res.status(500).send({ error: "Internal server error" });
+      }
+    }
   });
 }
 
@@ -48,20 +67,24 @@ async function runAgentJob({
     },
   });
   await sandbox.commands.run("git clone " + repoUrl + " repo");
-  const { stdout } = await sandbox.commands.run(
-    `cd repo && qckfx -a ../.qckfx/design-doc.json --quiet "You are to generate a design document for the following prompt and write it to design-doc.md. You MUST write the design doc to disk at repo/design-doc.md. After you're done just give the user a brief summary of the design doc. Here is the user prompt: ${prompt}"`,
+  await sandbox.commands.run(
+    `cd repo && qckfx -a ../.qckfx/design-doc.json --quiet "You are to generate a design document for the following prompt and write it to design-doc.md. You MUST write the design doc to disk at repo/design-doc.md. After you're done just return 'ok'. Here is the user prompt: ${prompt}"`,
     {
       requestTimeoutMs: 1000 * 60 * 20,
       timeoutMs: 1000 * 60 * 20,
     },
   );
 
-  let designDoc = await sandbox.files.read("repo/design-doc.md");
+  let designDoc = null;
   while (!designDoc) {
-    await sandbox.commands.run(
-      'cd repo && qckfx -a ../.qckfx/design-doc.json --quiet "You MUST output the design doc to disk at ./design-doc.md. Do that now."',
-    );
-    designDoc = await sandbox.files.read("repo/design-doc.md");
+    try {
+      designDoc = await sandbox.files.read("repo/design-doc.md");
+    } catch (error) {
+      console.error("Error reading design doc", error);
+      await sandbox.commands.run(
+        'cd repo && qckfx -a ../.qckfx/design-doc.json --quiet "You MUST output the design doc to disk at ./design-doc.md. Do that now."',
+      );
+    }
   }
 
   await app.prisma.doc.update({

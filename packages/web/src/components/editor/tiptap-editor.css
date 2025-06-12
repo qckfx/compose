@@ -1,0 +1,30 @@
+/* tiptap-editor.css */
+.prose strong {
+  padding: 0.35em 0em;
+  margin: 0.25em 0em;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.prose h1, .prose h2, .prose h3 {
+  margin-bottom: 0.7em;
+  font-weight: 800;
+}
+
+.prose h1 {
+  letter-spacing: 0.03em;
+}
+
+.prose h2, .prose h3 {
+  margin-top: 1.5em;
+  letter-spacing: 0.015em;
+}
+
+/* Style text selection */
+.ProseMirror ::selection {
+  background-color: rgb(229 231 235); /* neutral-200 */
+}
+
+.ProseMirror ::-moz-selection {
+  background-color: rgb(229 231 235); /* neutral-200 */
+}

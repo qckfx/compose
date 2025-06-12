@@ -20,11 +20,21 @@ export default function FloatingCommentToolbar({
   }, [editor]);
 
   if (!selection) return null;
-  const coords = editor.view.coordsAtPos(selection.to);
+  const startCoords = editor.view.coordsAtPos(selection.from);
+  const endPos = Math.max(selection.to - 1, selection.from);
+  const endCoords = editor.view.coordsAtPos(endPos);
+
+  const topMost = Math.min(startCoords.top, endCoords.top);
+  const centerX = (startCoords.left + endCoords.right) / 2;
 
   return (
     <div
-      style={{ position: "absolute", top: coords.top - 40, left: coords.left }}
+      style={{
+        position: "absolute",
+        top: topMost - 40,
+        left: centerX,
+        transform: "translateX(-50%)",
+      }}
       className="bg-white border p-1 rounded shadow"
     >
       <button
@@ -48,8 +58,9 @@ export default function FloatingCommentToolbar({
             .run();
           setSel(null);
         }}
+        className="px-2 py-1 text-sm text-gray-800 hover:text-gray-900 hover:bg-gray-100 rounded"
       >
-        💬
+        Comment
       </button>
     </div>
   );
