@@ -21,7 +21,12 @@ export function commentRoutes(app: FastifyInstance) {
       .parse(req.body);
 
     const comment = await app.prisma.comment.create({
-      data: { docId: id, ...data },
+      data: {
+        docId: id,
+        body: data.body,
+        start: data.start,
+        end: data.end,
+      },
     });
 
     sockets

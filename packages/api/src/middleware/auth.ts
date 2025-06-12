@@ -1,5 +1,5 @@
 import type { FastifyInstance } from "fastify";
-import { verifyJwt } from "../services/jwtService.js";
+import { getAuth } from "@clerk/fastify";
 
 interface AuthErrorResponse {
   name: string;
@@ -9,17 +9,9 @@ interface AuthErrorResponse {
 
 function unauth(): AuthErrorResponse {
   return {
-    name: 'Authentication required',
-    code: 'UNAUTHORIZED',
-    message: 'No authentication token provided',
-  };
-}
-
-export function invalid(): AuthErrorResponse {
-  return {
-    name: 'Invalid token',
-    code: 'INVALID_TOKEN',
-    message: 'Authentication token is malformed or invalid',
+    name: "Authentication required",
+    code: "UNAUTHORIZED",
+    message: "No authentication token provided",
   };
 }
 
@@ -33,22 +25,11 @@ declare module "fastify" {
 }
 
 export function authMiddleware(app: FastifyInstance) {
-  app.addHook('preHandler', async (req, res) => {
-    const token = req.cookies.token;
-    if (!token) {
+  app.addHook("preHandler", async (req, res) => {
+    const { userId, sessionClaims } = await getAuth(req);
+    if (!userId) {
       return res.status(401).send(unauth());
     }
-    try {
-      const payload = await verifyJwt(token);
-      if (!payload) {
-        return res.status(401).send(invalid());
-      }
-      req.auth = {
-        userId: payload.sub as string,
-        email: payload.email as string,
-      };
-    } catch {
-      return res.status(401).send(invalid());
-    }
+    req.auth = { userId, email: sessionClaims.email as string };
   });
 }
