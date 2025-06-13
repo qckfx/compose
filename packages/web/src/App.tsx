@@ -2,7 +2,8 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import NewDoc from "@/pages/NewDoc";
 import DocView from "@/pages/DocView";
 import DocNotFound from "@/pages/DocNotFound";
-import { SignedIn, SignedOut, SignIn } from "@clerk/clerk-react";
+import Landing from "@/pages/Landing";
+import { SignedIn, SignedOut } from "@clerk/clerk-react";
 import { Toaster } from "sonner";
 
 export default function App() {
@@ -19,9 +20,7 @@ export default function App() {
         </BrowserRouter>
       </SignedIn>
       <SignedOut>
-        <div className="flex justify-center items-center h-screen">
-          <SignIn />
-        </div>
+        <Landing />
       </SignedOut>
       <Toaster position="top-center" richColors />
     </>

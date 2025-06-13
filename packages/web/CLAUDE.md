@@ -1,0 +1,1 @@
+- @ in import statement paths works in the web package.
