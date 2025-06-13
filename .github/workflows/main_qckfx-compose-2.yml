@@ -12,6 +12,9 @@ on:
 jobs:
   build:
     runs-on: 'ubuntu-latest'
+    permissions:
+      contents: read
+      packages: write
 
     steps:
     - uses: actions/checkout@v2
@@ -23,14 +26,14 @@ jobs:
       uses: docker/login-action@v2
       with:
         registry: https://ghcr.io/
-        username: ${{ secrets.AzureAppService_ContainerUsername_7fe873161f03429d92a7c751fb9681b7 }}
-        password: ${{ secrets.AzureAppService_ContainerPassword_fcf9b8d7db17489e964d5b1efc19c9a9 }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Build and push container image to registry
       uses: docker/build-push-action@v3
       with:
         push: true
-        tags: ghcr.io/${{ secrets.AzureAppService_ContainerUsername_7fe873161f03429d92a7c751fb9681b7 }}/qckfx/compose@latest:${{ github.sha }}
+        tags: ghcr.io/${{ github.actor }}/qckfx/compose:${{ github.sha }}
         file: ./packages/api/Dockerfile
 
   deploy:
@@ -48,4 +51,4 @@ jobs:
         app-name: 'qckfx-compose-2'
         slot-name: 'production'
         publish-profile: ${{ secrets.AzureAppService_PublishProfile_4f7d6bc0fc2341fc8f1bec98380283e5 }}
-        images: 'ghcr.io/${{ secrets.AzureAppService_ContainerUsername_7fe873161f03429d92a7c751fb9681b7 }}/qckfx/compose@latest:${{ github.sha }}'
+        images: 'ghcr.io/${{ github.actor }}/qckfx/compose:${{ github.sha }}'
