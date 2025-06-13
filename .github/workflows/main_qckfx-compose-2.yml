@@ -31,7 +31,7 @@ jobs:
       with:
         push: true
         tags: ghcr.io/${{ secrets.AzureAppService_ContainerUsername_7fe873161f03429d92a7c751fb9681b7 }}/qckfx/compose@latest:${{ github.sha }}
-        file: ./Dockerfile
+        file: ./packages/api/Dockerfile
 
   deploy:
     runs-on: ubuntu-latest
