@@ -1,7 +1,5 @@
 import { motion } from "framer-motion";
-import { useInView } from "react-intersection-observer";
 import { ArrowRight } from "lucide-react";
-import { useRef } from "react";
 import { useMemo } from "react";
 import { useFeatureFlagEnabled } from "posthog-js/react";
 
@@ -107,7 +105,7 @@ export default function Workflow() {
     [],
   );
 
-  const stepRefs = useRef(steps.map(() => useRef(null))).current;
+  const stepRefs = useMemo(() => steps.map(() => ({ current: null })), [steps]);
 
   return (
     <section id="workflow" className="py-20">
@@ -144,10 +142,6 @@ export default function Workflow() {
           <div className="space-y-12 md:space-y-0">
             {steps.map((step, index) => {
               const ref = stepRefs[index];
-              useInView(ref, {
-                triggerOnce: true,
-                threshold: 0.1,
-              });
 
               return (
                 <motion.div
