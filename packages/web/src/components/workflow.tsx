@@ -144,8 +144,7 @@ export default function Workflow() {
           <div className="space-y-12 md:space-y-0">
             {steps.map((step, index) => {
               const ref = stepRefs[index];
-              const [inView] = useInView({
-                ref: ref,
+              useInView(ref, {
                 triggerOnce: true,
                 threshold: 0.1,
               });

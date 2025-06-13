@@ -8,7 +8,6 @@ WORKDIR /app
 
 # Copy the bare minimum first for better layer caching
 COPY package.json yarn.lock .yarnrc.yml ./
-COPY .yarn .yarn
 RUN mkdir -p packages/api packages/web
 COPY packages/api/package.json ./packages/api/package.json
 COPY packages/web/package.json ./packages/web/package.json
@@ -18,6 +17,9 @@ RUN yarn install
 
 # Copy the rest of the source
 COPY packages ./packages
+
+# Copy production environment file for web build
+COPY packages/web/.env.prod ./packages/web/.env.production
 
 # Build the web (React) application
 # Work in its directory to avoid workspace resolution issues
@@ -50,10 +52,12 @@ WORKDIR /srv/app
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/packages/api/package.json ./package.json
 COPY --from=builder /app/packages/api/dist ./dist
+COPY --from=builder /app/packages/api/prisma ./prisma
 
 # Expose API port
 EXPOSE 3000
 
 USER node
 
-CMD ["node", "dist/index.js"]
+# Run prisma seed before starting the application
+CMD ["sh", "-c", "npx prisma db seed && node dist/index.js"]
