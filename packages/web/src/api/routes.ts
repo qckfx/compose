@@ -1,5 +1,6 @@
 import { createApiRoutes } from "./typedFetch";
 import { MeResponseSchema, SuccessResponseSchema } from "@/schemas/auth";
+import { DocTemplateSchema, TemplatesResponseSchema } from "@/schemas/template";
 import { z } from "zod";
 
 /**
@@ -24,6 +25,7 @@ export const apiRoutes = {
         status: z.enum(["drafting", "completed", "error"]),
         createdAt: z.string().datetime(),
         updatedAt: z.string().datetime(),
+        template: DocTemplateSchema,
       }),
     ),
   },
@@ -35,6 +37,10 @@ export const apiRoutes = {
         name: z.string(),
       }),
     ),
+  },
+  templates: {
+    url: "/api/templates",
+    schema: TemplatesResponseSchema,
   },
   startDraft: {
     url: "/api/start-draft",

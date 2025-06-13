@@ -46,8 +46,16 @@ export default function DocView() {
   }, [id, navigate]);
 
   return (
-    <div className="pt-4 sm:pt-8 px-4 sm:px-8 pb-0 w-full h-screen flex flex-col gap-4 relative overflow-hidden overscroll-none">
-      <TipTapEditor docId={id!} initialContent={content} />
+    <div className="p-8 max-w-4xl mx-auto w-full h-screen flex flex-col gap-6 relative overflow-hidden overscroll-none">
+      {/* Editor container fills remaining space */}
+      <div className="flex-1 min-h-0 flex flex-col">
+        <TipTapEditor
+          docId={id!}
+          initialContent={content}
+          onContentChange={setContent}
+          heading="Editing draft"
+        />
+      </div>
       {!content && (
         <LoadingSpinner
           states={DOC_LOADING_STATES}

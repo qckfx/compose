@@ -1,0 +1,16 @@
+# Dependency directories
+node_modules
+packages/*/node_modules
+
+# Build artifacts
+packages/*/dist
+packages/*/build
+
+# End-to-end bot playground (not needed in image)
+packages/api/e2b
+
+# Git & local tooling
+.git
+.turbo
+.agent-shadow
+.qckfx 

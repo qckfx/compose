@@ -38,3 +38,4 @@ RUN git config --global --add safe.directory /home/user/repo
 
 RUN mkdir -p .qckfx
 COPY design-doc.json .qckfx/design-doc.json
+COPY browser.json .qckfx/browser.json

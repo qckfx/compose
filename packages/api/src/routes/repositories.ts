@@ -17,13 +17,23 @@ export function repositoriesRoutes(app: FastifyInstance) {
         auth: accessToken,
       });
 
-      const repos = await octokit.request("GET /user/repos");
-      app.log.info({ repos }, "Repositories");
-      const reposData = repos.data as { id: number; full_name: string }[];
+      // Fetch repositories that the user owns or has explicit access to
+      const userRepos = (await octokit.paginate("GET /user/repos", {
+        per_page: 200,
+        // Include repos the user owns, is a collaborator on, or accesses through org membership
+        affiliation: "owner,collaborator,organization_member",
+        // Ensure both public and private repos are returned
+        visibility: "all",
+      })) as { id: number; full_name: string }[];
+
+      app.log.info(
+        { totalRepos: userRepos.length },
+        "Fetched repositories including organisations",
+      );
 
       // Shape response as { id, name }
       res.send(
-        reposData.map(({ id, full_name }) => ({
+        userRepos.map(({ id, full_name }) => ({
           id: id.toString(),
           name: full_name,
         })),

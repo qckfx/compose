@@ -8,18 +8,33 @@ export function startDraftRoute(app: FastifyInstance) {
   app.post("/api/start-draft", async (req, res) => {
     try {
       // Validate request body
-      const { repositoryId, repositoryName, prompt } = z
+      const { repositoryId, repositoryName, prompt, templateId } = z
         .object({
           repositoryId: z.string(),
           repositoryName: z.string(),
           prompt: z.string().min(1),
+          templateId: z.string().uuid(),
         })
         .parse(req.body);
 
       const { userId } = z.object({ userId: z.string() }).parse(req.auth);
 
-      const repoUrl = `https://github.com/${repositoryName}.git`;
+      // Fetch the user's GitHub OAuth access token so we can clone private repositories
+      const accessToken = await app.clerkClient.users
+        .getUserOauthAccessToken(userId, "github")
+        .then((r) => r.data[0]?.token);
+
+      if (!accessToken) {
+        throw new Error("Missing GitHub OAuth access token for user");
+      }
+
+      const repoUrl = `https://x-access-token:${accessToken}@github.com/${repositoryName}.git`;
+
       const sessionId = uuid();
+
+      const template = await app.prisma.template.findUniqueOrThrow({
+        where: { id: templateId },
+      });
 
       await app.prisma.doc.create({
         data: {
@@ -30,10 +45,17 @@ export function startDraftRoute(app: FastifyInstance) {
           content: "",
           status: "drafting",
           clerkUserId: userId,
+          templateId,
         },
       });
 
-      runAgentJob({ app, repoUrl, prompt, sessionId }).catch((error) => {
+      runAgentJob({
+        app,
+        repoUrl,
+        prompt,
+        sessionId,
+        templateInstructions: template.instructions,
+      }).catch((error) => {
         app.log.error(error);
       });
 
@@ -54,25 +76,41 @@ async function runAgentJob({
   repoUrl,
   prompt,
   sessionId,
+  templateInstructions,
 }: {
   app: FastifyInstance;
   repoUrl: string;
   prompt: string;
   sessionId: string;
+  templateInstructions: string;
 }) {
   const sandbox = await Sandbox.create("composer", {
     timeoutMs: 1000 * 60 * 20,
     envs: {
       LLM_API_KEY: process.env.LLM_API_KEY,
+      LLM_BASE_URL: process.env.LLM_BASE_URL,
     },
   });
   await sandbox.commands.run("git clone " + repoUrl + " repo");
+
+  const fullPrompt = `Please use the template described below to author a comprehensive design document for the following user request:
+
+USER REQUEST: ${prompt}
+
+TEMPLATE TO FOLLOW:
+${templateInstructions}
+
+IMPORTANT INSTRUCTIONS:
+- Focus your document specifically on the user's request above
+- Follow the template structure and requirements exactly
+- Write the complete document to repo/design-doc.md
+- After successfully writing the document, output only 'ok'
+- Do not deviate from the user's request or add unrelated features
+- Ground all of your writing in the context of the user's request and the codebase to which you have access`;
+  await sandbox.files.write("prompt.txt", fullPrompt);
   await sandbox.commands.run(
-    `cd repo && qckfx -a ../.qckfx/design-doc.json --quiet "You are to generate a design document for the following prompt and write it to design-doc.md. You MUST write the design doc to disk at repo/design-doc.md. After you're done just return 'ok'. Here is the user prompt: ${prompt}"`,
-    {
-      requestTimeoutMs: 1000 * 60 * 20,
-      timeoutMs: 1000 * 60 * 20,
-    },
+    `cd repo && cat ../prompt.txt | qckfx -a ../.qckfx/design-doc.json --quiet`,
+    { requestTimeoutMs: 1000 * 60 * 20, timeoutMs: 1000 * 60 * 20 },
   );
 
   let designDoc = null;

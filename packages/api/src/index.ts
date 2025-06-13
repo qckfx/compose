@@ -12,7 +12,11 @@ import { commentRoutes } from "./routes/comments.js";
 import { docRoutes } from "./routes/docs.js";
 import { repositoriesRoutes } from "./routes/repositories.js";
 import { startDraftRoute } from "./routes/startDraft.js";
+import { templatesRoute } from "./routes/templates.js";
 import prismaPlugin from "./plugins/prisma.js";
+import fastifyStatic from "@fastify/static";
+import path from "path";
+import { fileURLToPath } from "url";
 
 const app = Fastify({
   logger: {
@@ -23,6 +27,10 @@ await app.register(cookie);
 await app.register(cors, { origin: true });
 await app.register(fastifyWebsocket);
 await app.register(prismaPlugin);
+
+// ESM modules don't have __dirname – recreate it so the existing code works in both CommonJS and ESM.
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 app.get("/api/ping", async () => ({ ok: true, ts: Date.now() }));
 publicAuthRoutes(app);
@@ -41,7 +49,26 @@ await app.register(async (secure) => {
   commentRoutes(secure);
   privateAuthRoutes(secure);
   repositoriesRoutes(secure);
+  templatesRoute(secure);
 });
+
+// Serve static client build in production
+if (process.env.NODE_ENV === "production") {
+  const clientBuildPath = path.join(__dirname, "web/dist");
+  await app.register(fastifyStatic, {
+    root: clientBuildPath,
+    prefix: "/", // optional: serve at root
+  });
+
+  // Fallback to index.html for all unmatched GET routes (SPA)
+  app.setNotFoundHandler((req, reply) => {
+    if (req.method === "GET" && !req.url.startsWith("/api")) {
+      reply.type("text/html");
+      return reply.sendFile("index.html");
+    }
+    reply.status(404).send({ error: "Not Found" });
+  });
+}
 
 app.listen({ port: 3000, host: "0.0.0.0" }).then((addr) => {
   console.log("API running →", addr);

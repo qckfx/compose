@@ -9,10 +9,19 @@ export function docRoutes(app: FastifyInstance) {
     return doc;
   });
 
-  app.get("/api/docs", async (req, res) => {
+  app.get("/api/docs", async (req) => {
     const { userId } = z.object({ userId: z.string() }).parse(req.auth);
     const docs = await app.prisma.doc.findMany({
       where: { clerkUserId: userId },
+      include: {
+        template: {
+          select: {
+            id: true,
+            name: true,
+            description: true,
+          },
+        },
+      },
     });
     return docs;
   });
