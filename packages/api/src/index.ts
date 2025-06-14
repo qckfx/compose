@@ -1,9 +1,14 @@
 import "dotenv/config";
 
+// IMPORTANT: Make sure to import `instrument.js` at the top of your file.
+// If you're using ECMAScript Modules (ESM) syntax, use `import "./instrument.js";`
+import "./instrument.js";
+
 import Fastify from "fastify";
 import cors from "@fastify/cors";
 import cookie from "@fastify/cookie";
 import fastifyWebsocket from "@fastify/websocket";
+import Sentry from "@sentry/node";
 import { ClerkClient, clerkClient, clerkPlugin } from "@clerk/fastify";
 import { registerWsRoute } from "./wsHub.js";
 import { authMiddleware } from "./middleware/auth.js";
@@ -23,6 +28,7 @@ const app = Fastify({
     level: "debug",
   },
 });
+Sentry.setupFastifyErrorHandler(app);
 await app.register(cookie);
 await app.register(cors, { origin: true });
 await app.register(fastifyWebsocket);
@@ -34,6 +40,10 @@ const __dirname = path.dirname(__filename);
 
 app.get("/api/ping", async () => ({ ok: true, ts: Date.now() }));
 publicAuthRoutes(app);
+
+app.get("/debug-sentry", function mainHandler(req, res) {
+  throw new Error("My first Sentry error!");
+});
 
 // Register private routes within an encapsulated plugin so authMiddleware applies only to them
 await app.register(async (secure) => {
