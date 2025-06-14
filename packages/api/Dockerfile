@@ -64,4 +64,4 @@ EXPOSE 3000
 USER node
 
 # Run prisma seed before starting the application
-CMD ["sh", "-c", "npx prisma db seed && node dist/index.js"]
+CMD ["sh", "-c", "npx prisma migrate deploy && npx prisma db seed && node dist/index.js"]
