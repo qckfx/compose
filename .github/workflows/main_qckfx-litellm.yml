@@ -39,6 +39,7 @@ jobs:
         push: true
         tags: ghcr.io/${{ env.REPO }}:${{ github.sha }}
         file: ./packages/litellm/Dockerfile
+        context: ./packages/litellm
 
   deploy:
     runs-on: ubuntu-latest
