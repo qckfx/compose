@@ -40,8 +40,8 @@ RUN yarn workspace api build
 WORKDIR /app
 
 # Move the compiled web bundle where the API expects it
-RUN mkdir -p /app/packages/api/dist/web \
-    && cp -r /app/packages/web/dist /app/packages/api/dist/web/
+RUN mkdir -p /app/packages/api/dist/web/dist \
+    && cp -r /app/packages/web/dist/* /app/packages/api/dist/web/dist/
 
 # ------------------------
 # Production image
