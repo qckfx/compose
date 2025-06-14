@@ -1,5 +1,9 @@
 FROM node:22-alpine AS builder
 
+# Accept build arg for Sentry auth token
+ARG SENTRY_AUTH_TOKEN
+ENV SENTRY_AUTH_TOKEN=$SENTRY_AUTH_TOKEN
+
 # Activate Corepack to get Yarn (specified in package.json)
 RUN corepack enable
 

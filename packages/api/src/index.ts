@@ -8,7 +8,7 @@ import Fastify from "fastify";
 import cors from "@fastify/cors";
 import cookie from "@fastify/cookie";
 import fastifyWebsocket from "@fastify/websocket";
-import Sentry from "@sentry/node";
+import * as Sentry from "@sentry/node";
 import { ClerkClient, clerkClient, clerkPlugin } from "@clerk/fastify";
 import { registerWsRoute } from "./wsHub.js";
 import { authMiddleware } from "./middleware/auth.js";

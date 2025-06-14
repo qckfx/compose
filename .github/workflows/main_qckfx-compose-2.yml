@@ -39,6 +39,8 @@ jobs:
         push: true
         tags: ghcr.io/${{ env.REPO }}:${{ github.sha }}
         file: ./packages/api/Dockerfile
+        build-args: |
+          SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
 
   deploy:
     runs-on: ubuntu-latest
