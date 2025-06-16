@@ -32,8 +32,9 @@ export default function SidebarThreads({
 
   /** WS live updates (assumes msg types from earlier scaffold) */
   useEffect(() => {
+    const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
     const ws = new WebSocket(
-      `${window.location.origin.replace(/^http/, "ws")}/api/ws/${docId}`,
+      `${protocol}//${window.location.host}/api/ws/${docId}`,
     );
     ws.onmessage = (ev) => {
       const msg = JSON.parse(ev.data);
