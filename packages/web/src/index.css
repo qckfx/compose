@@ -177,3 +177,13 @@ h1 {
 .ProseMirror:focus {
   outline: none !important;
 }
+
+/* Hide scrollbars while maintaining scroll functionality */
+.hide-scrollbar {
+  -ms-overflow-style: none;  /* Internet Explorer 10+ */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;  /* Safari and Chrome */
+}

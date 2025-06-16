@@ -1,16 +1,12 @@
 import { PrismaClient } from "@prisma/client";
-import { v4 as uuidv4 } from "uuid";
 const prisma = new PrismaClient();
 
-async function main() {
-  await prisma.Template.createMany({
-    data: [
-      {
-        id: uuidv4().toString(),
-        name: "Architecture Doc",
-        description:
-          "System design document for your team's implementation plan. Use when you know the solution and need to document approach, trade-offs, and implementation details.",
-        instructions: `You are an expert principal architect at a top-tier technology company drafting a comprehensive Architecture Design Document (ADD). Your document must be thorough, opinionated, and follow industry best practices from organizations like Google, Amazon, Netflix, and Stripe.
+const templates = [
+  {
+    name: "Architecture Doc",
+    description:
+      "System design document for your team's implementation plan. Use when you know the solution and need to document approach, trade-offs, and implementation details.",
+    instructions: `You are an expert principal architect at a top-tier technology company drafting a comprehensive Architecture Design Document (ADD). Your document must be thorough, opinionated, and follow industry best practices from organizations like Google, Amazon, Netflix, and Stripe.
 
 STRUCTURE AND REQUIREMENTS:
 
@@ -77,14 +73,13 @@ WRITING STANDARDS:
 - Anticipate obvious questions and address them proactively
 - Write for multiple audiences (engineers, product managers, executives)
 - Include diagrams descriptions that would be clear to implement`,
-        isDefault: true,
-      },
-      {
-        id: uuidv4().toString(),
-        name: "ADR",
-        description:
-          "Architecture Decision Record - Documents important technical decisions with context, rationale, and consequences. Helps teams understand why choices were made.",
-        instructions: `You are an expert software architect documenting a critical architecture decision following the ADR (Architecture Decision Record) format used by leading technology organizations. This ADR will become part of the permanent technical record and must be comprehensive, well-reasoned, and actionable.
+    isDefault: true,
+  },
+  {
+    name: "ADR",
+    description:
+      "Architecture Decision Record - Documents important technical decisions with context, rationale, and consequences. Helps teams understand why choices were made.",
+    instructions: `You are an expert software architect documenting a critical architecture decision following the ADR (Architecture Decision Record) format used by leading technology organizations. This ADR will become part of the permanent technical record and must be comprehensive, well-reasoned, and actionable.
 
 STRUCTURE AND REQUIREMENTS:
 
@@ -150,13 +145,12 @@ WRITING STANDARDS:
 - Assume readers have context but explain domain-specific concepts
 - Use bullet points and numbered lists for clarity
 - Include command examples, configuration snippets, or code samples where relevant`,
-      },
-      {
-        id: uuidv4().toString(),
-        name: "RFC",
-        description:
-          "Technical proposal seeking organization-wide feedback before implementation. Use for cross-team changes, major decisions, or when you need consensus and input from multiple stakeholders.",
-        instructions: `You are a senior staff engineer at a leading technology company drafting a Request for Comments (RFC) following the rigorous standards used by organizations like Google, Amazon, and Meta. This RFC will undergo peer review and influence significant technical decisions, so it must be exceptionally thorough and well-reasoned.
+  },
+  {
+    name: "RFC",
+    description:
+      "Technical proposal seeking organization-wide feedback before implementation. Use for cross-team changes, major decisions, or when you need consensus and input from multiple stakeholders.",
+    instructions: `You are a senior staff engineer at a leading technology company drafting a Request for Comments (RFC) following the rigorous standards used by organizations like Google, Amazon, and Meta. This RFC will undergo peer review and influence significant technical decisions, so it must be exceptionally thorough and well-reasoned.
 
 STRUCTURE AND REQUIREMENTS:
 
@@ -311,13 +305,12 @@ WRITING STANDARDS:
 - Include enough detail for implementation without being unnecessarily verbose
 - Use consistent terminology and define domain-specific concepts
 - Structure content for easy navigation and reference during implementation`,
-      },
-      {
-        id: uuidv4().toString(),
-        name: "Taskmaster PRD",
-        description:
-          "Product Requirements Document optimized for AI task generation. Creates comprehensive PRDs that task-master.dev can parse into actionable development tasks with clear dependencies and implementation phases.",
-        instructions: `You are an expert product manager and software architect at a leading technology company creating a Product Requirements Document (PRD) specifically optimized for AI-driven task generation. This PRD will be parsed by task-master.dev to automatically generate development tasks, so it must be extremely structured, comprehensive, and implementation-focused.
+  },
+  {
+    name: "Taskmaster PRD",
+    description:
+      "Product Requirements Document optimized for AI task generation. Creates comprehensive PRDs that task-master.dev can parse into actionable development tasks with clear dependencies and implementation phases.",
+    instructions: `You are an expert product manager and software architect at a leading technology company creating a Product Requirements Document (PRD) specifically optimized for AI-driven task generation. This PRD will be parsed by task-master.dev to automatically generate development tasks, so it must be extremely structured, comprehensive, and implementation-focused.
 
 CRITICAL SUCCESS FACTORS:
 - Structure content for easy AI parsing and task extraction
@@ -508,10 +501,26 @@ WRITING STANDARDS FOR AI PARSING:
 - Use present tense for requirements ("the system must", "users can")
 - Include specific file names, API endpoints, and component names where relevant
 - Provide enough detail for automatic task generation without human interpretation`,
+  },
+];
+
+async function main() {
+  for (const template of templates) {
+    await prisma.template.upsert({
+      where: { name: template.name },
+      update: {
+        description: template.description,
+        instructions: template.instructions,
+        isDefault: template.isDefault,
       },
-    ],
-    skipDuplicates: true,
-  });
+      create: {
+        name: template.name,
+        description: template.description,
+        instructions: template.instructions,
+        isDefault: template.isDefault ?? false,
+      },
+    });
+  }
 }
 
 main().finally(() => prisma.$disconnect());

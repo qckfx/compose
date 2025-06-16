@@ -22,7 +22,7 @@ enum DocStatus {
 
 model Template {
   id           String   @id @default(uuid())
-  name         String
+  name         String   @unique
   description  String
   instructions String   @db.Text
   isDefault    Boolean  @default(false)
