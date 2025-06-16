@@ -1,125 +1,108 @@
-import { Github, Twitter, Linkedin } from "lucide-react";
-import { useFeatureFlagEnabled } from "posthog-js/react";
+import { Github, Twitter, Mail } from "lucide-react";
 
 export default function Footer() {
-  const showPricing = useFeatureFlagEnabled("show-pricing");
-  const showLegal = useFeatureFlagEnabled("show-legal");
-
   return (
-    <footer className="bg-neutral-900 text-neutral-400 py-12">
+    <footer className="bg-neutral-100 py-12 border-t border-neutral-200">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          <div className="col-span-1 md:col-span-2">
-            <a href="/" className="flex items-center mb-4">
-              <div className="relative">
-                <span className="text-2xl font-bold text-white">Compose</span>
-                <div className="absolute -bottom-1 left-0 w-full h-0.5 bg-gradient-to-r from-[#1B9847] to-transparent"></div>
-              </div>
-            </a>
-            <p className="mb-4 max-w-md">
-              Your planning copilot that generates technical documentation
-              designed for AI consumption and helps engineers at early stage
-              startups think through complex problems.
-            </p>
-            <div className="flex space-x-4">
-              <a
-                href="https://twitter.com/qckfx_"
-                className="hover:text-white transition-colors"
-              >
-                <Twitter className="h-5 w-5" />
-                <span className="sr-only">Twitter</span>
+        <div className="max-w-4xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div>
+              <a href="/" className="flex items-center mb-4">
+                <span className="text-xl font-bold text-neutral-900">
+                  Compose
+                </span>
+                <span className="ml-2 px-2 py-1 text-xs bg-orange-100 text-orange-800 rounded-md font-medium">
+                  ALPHA
+                </span>
               </a>
-              <a
-                href="https://github.com/qckfx"
-                className="hover:text-white transition-colors"
-              >
-                <Github className="h-5 w-5" />
-                <span className="sr-only">GitHub</span>
-              </a>
-              <a
-                href="https://www.linkedin.com/company/qckfx"
-                className="hover:text-white transition-colors"
-              >
-                <Linkedin className="h-5 w-5" />
-                <span className="sr-only">LinkedIn</span>
-              </a>
-            </div>
-          </div>
-
-          <div>
-            <h3 className="text-white font-semibold mb-4">Product</h3>
-            <ul className="space-y-2">
-              <li>
+              <p className="text-neutral-600 text-sm mb-4">
+                Helping engineers think through their ideas and create better
+                technical documentation.
+              </p>
+              <div className="flex space-x-4">
                 <a
-                  href="#features"
-                  className="hover:text-white transition-colors"
+                  href="https://x.com/qckfx_"
+                  className="text-neutral-500 hover:text-neutral-700 transition-colors"
                 >
-                  Features
+                  <Twitter className="h-5 w-5" />
+                  <span className="sr-only">Twitter</span>
                 </a>
-              </li>
-              <li>
                 <a
-                  href="#workflow"
-                  className="hover:text-white transition-colors"
+                  href="https://github.com/qckfx/agent-sdk"
+                  className="text-neutral-500 hover:text-neutral-700 transition-colors"
                 >
-                  How It Works
+                  <Github className="h-5 w-5" />
+                  <span className="sr-only">GitHub</span>
                 </a>
-              </li>
-              {showPricing && (
-                <li>
-                  <a
-                    href="#pricing"
-                    className="hover:text-white transition-colors"
-                  >
-                    Pricing
-                  </a>
-                </li>
-              )}
-              <li>
-                <a href="#" className="hover:text-white transition-colors">
-                  Roadmap
-                </a>
-              </li>
-            </ul>
-          </div>
-
-          <div>
-            <h3 className="text-white font-semibold mb-4">Company</h3>
-            <ul className="space-y-2">
-              <li>
-                <a
-                  href="https://qckfx.com/blog"
-                  className="hover:text-white transition-colors"
-                >
-                  Blog
-                </a>
-              </li>
-              <li>
                 <a
                   href="mailto:chris.wood@qckfx.com"
-                  className="hover:text-white transition-colors"
+                  className="text-neutral-500 hover:text-neutral-700 transition-colors"
                 >
-                  Contact
+                  <Mail className="h-5 w-5" />
+                  <span className="sr-only">Email</span>
                 </a>
-              </li>
-            </ul>
-          </div>
-        </div>
-
-        <div className="border-t border-neutral-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
-          <p>
-            &copy; {new Date().getFullYear()} qckfx, Inc. All rights reserved.
-          </p>
-          {showLegal && (
-            <div className="flex space-x-6 mt-4 md:mt-0">
-              <a href="#" className="hover:text-white transition-colors">
-                Privacy Policy
-              </a>
-              <a href="#" className="hover:text-white transition-colors">
-                Terms of Service
-              </a>
+              </div>
             </div>
-          )}
+
+            <div>
+              <h3 className="font-semibold mb-4 text-neutral-900">Product</h3>
+              <ul className="space-y-2 text-sm">
+                <li>
+                  <a
+                    href="#features"
+                    className="text-neutral-600 hover:text-neutral-900 transition-colors"
+                  >
+                    What it does
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#workflow"
+                    className="text-neutral-600 hover:text-neutral-900 transition-colors"
+                  >
+                    How it works
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            <div>
+              <h3 className="font-semibold mb-4 text-neutral-900">Feedback</h3>
+              <ul className="space-y-2 text-sm">
+                <li>
+                  <a
+                    href="mailto:chris.wood@qckfx.com"
+                    className="text-neutral-600 hover:text-neutral-900 transition-colors"
+                  >
+                    Send feedback
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="mailto:chris.wood@qckfx.com"
+                    className="text-neutral-600 hover:text-neutral-900 transition-colors"
+                  >
+                    Feature requests
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="mailto:chris.wood@qckfx.com"
+                    className="text-neutral-600 hover:text-neutral-900 transition-colors"
+                  >
+                    Bug reports
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="border-t border-neutral-200 mt-12 pt-8 text-center">
+            <p className="text-sm text-neutral-500">
+              &copy; {new Date().getFullYear()} qckfx, Inc. • Built with
+              feedback from engineers like you
+            </p>
+          </div>
         </div>
       </div>
     </footer>

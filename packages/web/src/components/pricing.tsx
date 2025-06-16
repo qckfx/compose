@@ -1,217 +1,109 @@
-import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { CheckCircle2, Sparkles } from "lucide-react";
-
-const plans = [
-  {
-    name: "Starter",
-    price: "$19",
-    period: "/month",
-    description: "Perfect for individual engineers or small projects",
-    features: [
-      "5 projects per month",
-      "Architecture Decision Records",
-      "Implementation Plans",
-      "Export to Markdown",
-      "Basic AI coding tool integration",
-    ],
-    cta: "Start Free Trial",
-    popular: false,
-  },
-  {
-    name: "Pro",
-    price: "$49",
-    period: "/month",
-    description: "For engineers who value comprehensive planning",
-    features: [
-      "Unlimited projects",
-      "All document types (ADRs, RFCs, PRDs)",
-      "Advanced AI tool integration",
-      "Team collaboration",
-      "Version history",
-      "Custom templates",
-    ],
-    cta: "Start Free Trial",
-    popular: true,
-  },
-  {
-    name: "Team",
-    price: "$99",
-    period: "/month",
-    description: "For engineering teams that need to align",
-    features: [
-      "Everything in Pro",
-      "Up to 10 team members",
-      "Advanced permissions",
-      "SSO authentication",
-      "API access",
-      "Priority support",
-    ],
-    cta: "Contact Sales",
-    popular: false,
-  },
-];
+import { CheckCircle2 } from "lucide-react";
+import { useSignUp } from "@clerk/clerk-react";
 
 export default function Pricing() {
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.2,
-      },
-    },
-  };
+  const { signUp } = useSignUp();
 
-  const cardVariants = {
-    hidden: { opacity: 0, y: 30 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.5,
-      },
-    },
+  const handleSignUp = () => {
+    signUp?.authenticateWithRedirect({
+      strategy: "oauth_github",
+      redirectUrl: "/new",
+      redirectUrlComplete: "/new",
+    });
   };
-
   return (
-    <section
-      id="pricing"
-      className="py-20 bg-gradient-to-b from-neutral-100 to-neutral-50"
-    >
+    <section id="pricing" className="py-20">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <motion.h2
-            className="text-3xl md:text-4xl font-bold mb-4 text-neutral-900"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-          >
-            Simple,{" "}
-            <span className="bg-gradient-to-r from-[#1B9847] to-[#158039] bg-clip-text text-transparent">
-              Transparent
-            </span>{" "}
-            Pricing
-          </motion.h2>
-          <motion.p
-            className="text-lg text-neutral-600 max-w-2xl mx-auto"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-          >
-            Lock in early adopter pricing now. All plans include a 14-day free
-            trial.
-          </motion.p>
+          <h2 className="text-3xl md:text-4xl font-bold mb-4 text-neutral-900">
+            Try it free while we build
+          </h2>
+          <p className="text-lg text-neutral-600 max-w-2xl mx-auto">
+            The tool is basic but functional. We want feedback from the
+            community on what to build next.
+          </p>
         </div>
 
-        <motion.div
-          className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto"
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-        >
-          {plans.map((plan, index) => (
-            <motion.div
-              key={index}
-              className={`rounded-xl overflow-hidden relative group ${
-                plan.popular
-                  ? "border-2 border-[#1B9847] shadow-xl bg-gradient-to-b from-white to-[#1B9847]/5"
-                  : "border border-neutral-200 shadow-lg bg-white hover:shadow-xl"
-              } transition-all duration-300`}
-              variants={cardVariants}
-              whileHover={{
-                y: -8,
-                transition: { duration: 0.3 },
-              }}
-            >
-              {plan.popular && (
-                <motion.div
-                  className="bg-gradient-to-r from-[#1B9847] to-[#158039] text-white text-center py-2 text-sm font-medium relative overflow-hidden"
-                  initial={{ opacity: 0, y: -20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: 0.3 }}
-                >
-                  <Sparkles className="inline-block w-4 h-4 mr-1" />
-                  Most Popular
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 animate-pulse"></div>
-                </motion.div>
-              )}
+        <div className="max-w-2xl mx-auto">
+          <div className="bg-white rounded-lg p-8 shadow-lg border-2 border-[#1B9847] relative">
+            <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+              <span className="bg-[#1B9847] text-white px-4 py-2 rounded-full text-sm font-medium">
+                Free to try
+              </span>
+            </div>
 
-              <div className="p-6">
-                <h3 className="text-xl font-bold text-neutral-900 mb-2">
-                  {plan.name}
-                </h3>
-                <div className="flex items-baseline mb-4">
-                  <motion.span
-                    className="text-4xl font-bold text-neutral-900"
-                    initial={{ scale: 0.8, opacity: 0 }}
-                    whileInView={{ scale: 1, opacity: 1 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.5, delay: index * 0.1 }}
-                  >
-                    {plan.price}
-                  </motion.span>
-                  <span className="text-neutral-500 ml-1">{plan.period}</span>
-                </div>
-                <p className="text-neutral-600 mb-6">{plan.description}</p>
-                <Button
-                  className={`w-full transition-all duration-300 ${
-                    plan.popular
-                      ? "bg-gradient-to-r from-[#1B9847] to-[#158039] hover:from-[#158039] hover:to-[#1B9847] text-white shadow-lg hover:shadow-xl"
-                      : "bg-white text-neutral-900 border-2 border-neutral-300 hover:border-[#1B9847] hover:bg-[#1B9847]/5"
-                  }`}
-                >
-                  {plan.cta}
-                </Button>
+            <div className="text-center mb-8">
+              <h3 className="text-2xl font-bold text-neutral-900 mb-2">
+                Full access to current tool
+              </h3>
+              <div className="flex items-baseline justify-center mb-4">
+                <span className="text-4xl font-bold text-neutral-900">
+                  Free
+                </span>
+                <span className="text-neutral-500 ml-2">while we build</span>
               </div>
+              <p className="text-neutral-600">
+                Connect repos, generate docs, edit in browser, export files.
+              </p>
+            </div>
 
-              <div className="bg-neutral-50 p-6 border-t border-neutral-100">
-                <ul className="space-y-3">
-                  {plan.features.map((feature, i) => (
-                    <motion.li
-                      key={i}
-                      className="flex items-start"
-                      initial={{ opacity: 0, x: -10 }}
-                      whileInView={{ opacity: 1, x: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 0.3, delay: i * 0.05 }}
-                    >
-                      <div className="bg-gradient-to-br from-[#1B9847] to-[#158039] rounded-full p-1 mr-3 mt-0.5 flex-shrink-0">
-                        <CheckCircle2 className="h-3 w-3 text-white" />
-                      </div>
-                      <span className="text-neutral-700">{feature}</span>
-                    </motion.li>
-                  ))}
-                </ul>
-              </div>
+            <ul className="space-y-3 mb-8">
+              {[
+                "Connect unlimited GitHub repos",
+                "Generate .cursorrules, TaskMaster PRDs, ADRs, RFCs",
+                "Templates from top tech companies",
+                "AI agent that reads your actual code",
+                "Browser editor (like Google Docs)",
+                "Export as .md/.txt or copy to clipboard",
+                "Direct feedback line to shape the product",
+              ].map((feature, i) => (
+                <li key={i} className="flex items-start">
+                  <CheckCircle2 className="h-5 w-5 text-[#1B9847] mr-3 mt-0.5 flex-shrink-0" />
+                  <span className="text-neutral-700">{feature}</span>
+                </li>
+              ))}
+            </ul>
 
-              {/* Hover effect overlay */}
-              <div className="absolute inset-0 bg-gradient-to-br from-[#1B9847]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
-            </motion.div>
-          ))}
-        </motion.div>
-
-        <motion.div
-          className="mt-16 text-center"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-        >
-          <p className="text-neutral-500">
-            Need a custom plan for your enterprise?{" "}
-            <a
-              href="#"
-              className="font-medium bg-gradient-to-r from-[#1B9847] to-[#158039] bg-clip-text text-transparent hover:underline"
+            <Button
+              className="w-full bg-[#1B9847] hover:bg-[#158039] text-white text-lg py-6"
+              onClick={handleSignUp}
             >
-              Contact our sales team
-            </a>
-          </p>
-        </motion.div>
+              Try it free
+            </Button>
+          </div>
+
+          <div className="mt-8 bg-yellow-50 rounded-lg p-6 border border-yellow-200">
+            <h4 className="font-medium mb-2 text-neutral-900">
+              What happens next?
+            </h4>
+            <p className="text-sm text-neutral-700 mb-3">
+              We will eventually need to charge to cover AI costs, but early
+              users will get:
+            </p>
+            <ul className="text-sm text-neutral-600 space-y-1">
+              <li>• Grandfathered pricing (much cheaper)</li>
+              <li>• Say in what features we build</li>
+              <li>• Plenty of notice before any changes</li>
+            </ul>
+          </div>
+
+          <div className="mt-8 text-center">
+            <p className="text-sm text-neutral-500">
+              Built by{" "}
+              <a href="#" className="text-[#1B9847] hover:underline">
+                qckfx
+              </a>{" "}
+              • Questions?{" "}
+              <a
+                href="mailto:chris.wood@qckfx.com"
+                className="text-[#1B9847] hover:underline"
+              >
+                chris.wood@qckfx.com
+              </a>
+            </p>
+          </div>
+        </div>
       </div>
     </section>
   );

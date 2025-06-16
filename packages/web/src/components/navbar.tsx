@@ -1,14 +1,29 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
-import { motion } from "framer-motion";
-import { SignInButton, SignUpButton } from "@clerk/clerk-react";
-import { useFeatureFlagEnabled } from "posthog-js/react";
+import { useSignIn, useSignUp } from "@clerk/clerk-react";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const showPricing = useFeatureFlagEnabled("show-pricing");
+  const { signIn } = useSignIn();
+  const { signUp } = useSignUp();
+
+  const handleSignIn = () => {
+    signIn?.authenticateWithRedirect({
+      strategy: "oauth_github",
+      redirectUrl: "/new",
+      redirectUrlComplete: "/new",
+    });
+  };
+
+  const handleSignUp = () => {
+    signUp?.authenticateWithRedirect({
+      strategy: "oauth_github",
+      redirectUrl: "/new",
+      redirectUrlComplete: "/new",
+    });
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -19,24 +34,23 @@ export default function Navbar() {
   }, []);
 
   return (
-    <motion.header
-      className={`fixed top-0 w-full z-50 transition-all duration-300 bg-white border-b border-neutral-100 ${
-        scrolled ? "shadow-sm" : ""
+    <header
+      className={`fixed top-0 w-full z-50 transition-all duration-300 ${
+        scrolled
+          ? "bg-white/95 backdrop-blur-sm shadow-md"
+          : "bg-white/90 backdrop-blur-sm shadow-sm"
       }`}
-      initial={{ y: -100 }}
-      animate={{ y: 0 }}
-      transition={{ duration: 0.5 }}
     >
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center">
             <a href="/" className="flex items-center">
-              <div className="relative">
-                <span className="text-2xl font-bold text-neutral-900">
-                  Compose
-                </span>
-                <div className="absolute -bottom-1 left-0 w-full h-0.5 bg-gradient-to-r from-[#1B9847] to-transparent"></div>
-              </div>
+              <span className="text-2xl font-bold text-neutral-900">
+                Compose
+              </span>
+              <span className="ml-2 px-2 py-1 text-xs bg-orange-100 text-orange-800 rounded-md font-medium">
+                ALPHA
+              </span>
             </a>
           </div>
 
@@ -45,61 +59,54 @@ export default function Navbar() {
               <li>
                 <a
                   href="#features"
-                  className="text-neutral-600 hover:text-neutral-800 transition-all duration-300 relative group"
+                  className="text-neutral-700 hover:text-neutral-900 transition-colors"
                 >
-                  Features
-                  <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#1B9847] transition-all duration-300 group-hover:w-full"></span>
+                  What it does
                 </a>
               </li>
               <li>
                 <a
                   href="#workflow"
-                  className="text-neutral-600 hover:text-neutral-800 transition-all duration-300 relative group"
+                  className="text-neutral-700 hover:text-neutral-900 transition-colors"
                 >
-                  How It Works
-                  <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#1B9847] transition-all duration-300 group-hover:w-full"></span>
+                  How it works
                 </a>
               </li>
               <li>
                 <a
-                  href="#testimonials"
-                  className="text-neutral-600 hover:text-neutral-800 transition-all duration-300 relative group"
+                  href="#feedback"
+                  className="text-neutral-700 hover:text-neutral-900 transition-colors"
                 >
-                  Testimonials
-                  <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#1B9847] transition-all duration-300 group-hover:w-full"></span>
+                  Give feedback
                 </a>
               </li>
-              {showPricing && (
-                <li>
-                  <a
-                    href="#pricing"
-                    className="text-neutral-600 hover:text-neutral-800 transition-all duration-300 relative group"
-                  >
-                    Pricing
-                    <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#1B9847] transition-all duration-300 group-hover:w-full"></span>
-                  </a>
-                </li>
-              )}
+              <li>
+                <a
+                  href="#pricing"
+                  className="text-neutral-700 hover:text-neutral-900 transition-colors"
+                >
+                  Early access
+                </a>
+              </li>
             </ul>
           </nav>
 
           <div className="hidden md:block">
-            <SignInButton>
-              <Button variant="outline" className="mr-4">
-                Log In
-              </Button>
-            </SignInButton>
-            <SignUpButton>
-              <Button className="bg-[#1B9847] hover:bg-[#158039] text-white">
-                Get Started
-              </Button>
-            </SignUpButton>
+            <Button variant="outline" className="mr-4" onClick={handleSignIn}>
+              Sign in
+            </Button>
+            <Button
+              className="bg-[#1B9847] hover:bg-[#158039] text-white"
+              onClick={handleSignUp}
+            >
+              Try it (free)
+            </Button>
           </div>
 
           <div className="md:hidden">
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="text-neutral-600"
+              className="text-neutral-700"
             >
               {isOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
@@ -109,59 +116,54 @@ export default function Navbar() {
 
       {/* Mobile menu */}
       {isOpen && (
-        <motion.div
-          className="md:hidden bg-white shadow-lg"
-          initial={{ opacity: 0, height: 0 }}
-          animate={{ opacity: 1, height: "auto" }}
-          exit={{ opacity: 0, height: 0 }}
-          transition={{ duration: 0.3 }}
-        >
+        <div className="md:hidden bg-white shadow-lg border-t">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
             <a
               href="#features"
-              className="block px-3 py-2 text-neutral-600 hover:text-neutral-800"
+              className="block px-3 py-2 text-neutral-700 hover:text-neutral-900"
               onClick={() => setIsOpen(false)}
             >
-              Features
+              What it does
             </a>
             <a
               href="#workflow"
-              className="block px-3 py-2 text-neutral-600 hover:text-neutral-800"
+              className="block px-3 py-2 text-neutral-700 hover:text-neutral-900"
               onClick={() => setIsOpen(false)}
             >
-              How It Works
+              How it works
             </a>
             <a
-              href="#testimonials"
-              className="block px-3 py-2 text-neutral-600 hover:text-neutral-800"
+              href="#feedback"
+              className="block px-3 py-2 text-neutral-700 hover:text-neutral-900"
               onClick={() => setIsOpen(false)}
             >
-              Testimonials
+              Give feedback
             </a>
-            {showPricing && (
-              <a
-                href="#pricing"
-                className="block px-3 py-2 text-neutral-600 hover:text-neutral-800"
-                onClick={() => setIsOpen(false)}
-              >
-                Pricing
-              </a>
-            )}
+            <a
+              href="#pricing"
+              className="block px-3 py-2 text-neutral-700 hover:text-neutral-900"
+              onClick={() => setIsOpen(false)}
+            >
+              Early access
+            </a>
             <div className="pt-4 flex flex-col space-y-2">
-              <SignInButton>
-                <Button variant="outline" className="w-full">
-                  Log In
-                </Button>
-              </SignInButton>
-              <SignUpButton>
-                <Button className="w-full bg-[#1B9847] hover:bg-[#158039] text-white">
-                  Get Started
-                </Button>
-              </SignUpButton>
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={handleSignIn}
+              >
+                Sign in
+              </Button>
+              <Button
+                className="w-full bg-[#1B9847] hover:bg-[#158039] text-white"
+                onClick={handleSignUp}
+              >
+                Try it (free)
+              </Button>
             </div>
           </div>
-        </motion.div>
+        </div>
       )}
-    </motion.header>
+    </header>
   );
 }

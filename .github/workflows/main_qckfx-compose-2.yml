@@ -57,4 +57,4 @@ jobs:
         app-name: 'qckfx-compose-2'
         slot-name: 'production'
         publish-profile: ${{ secrets.AzureAppService_PublishProfile_4f7d6bc0fc2341fc8f1bec98380283e5 }}
-        images: 'ghcr.io/${{ github.actor }}/qckfx/compose:${{ github.sha }}'
+        images: 'ghcr.io/${{ env.REPO }}:${{ github.sha }}'
