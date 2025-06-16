@@ -3,35 +3,36 @@ import NewDoc from "@/pages/NewDoc";
 import DocView from "@/pages/DocView";
 import DocNotFound from "@/pages/DocNotFound";
 import Landing from "@/pages/Landing";
-import { SignedIn, SignedOut, useAuth } from "@clerk/clerk-react";
+import SSOCallback from "@/components/SSOCallback";
+import { SignedIn, SignedOut } from "@clerk/clerk-react";
 import { Toaster } from "sonner";
 
 export default function App() {
-  const { isLoaded } = useAuth();
-
-  if (!isLoaded) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        Loading...
-      </div>
-    );
-  }
-
   return (
     <>
-      <SignedIn>
-        <BrowserRouter>
-          <Routes>
-            <Route path="/new" element={<NewDoc />} />
-            <Route path="/doc/:id" element={<DocView />} />
-            <Route path="/not-found" element={<DocNotFound />} />
-            <Route path="*" element={<Navigate to="/new" replace />} />
-          </Routes>
-        </BrowserRouter>
-      </SignedIn>
-      <SignedOut>
-        <Landing />
-      </SignedOut>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/sso-callback" element={<SSOCallback />} />
+          <Route
+            path="/*"
+            element={
+              <>
+                <SignedIn>
+                  <Routes>
+                    <Route path="/new" element={<NewDoc />} />
+                    <Route path="/doc/:id" element={<DocView />} />
+                    <Route path="/not-found" element={<DocNotFound />} />
+                    <Route path="*" element={<Navigate to="/new" replace />} />
+                  </Routes>
+                </SignedIn>
+                <SignedOut>
+                  <Landing />
+                </SignedOut>
+              </>
+            }
+          />
+        </Routes>
+      </BrowserRouter>
       <Toaster position="top-center" richColors />
     </>
   );

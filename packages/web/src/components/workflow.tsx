@@ -6,7 +6,7 @@ export default function Workflow() {
   const handleAuth = () => {
     signIn?.authenticateWithRedirect({
       strategy: "oauth_github",
-      redirectUrl: "/new",
+      redirectUrl: "/sso-callback",
       redirectUrlComplete: "/new",
     });
   };
