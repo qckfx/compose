@@ -28,3 +28,15 @@
 .ProseMirror ::-moz-selection {
   background-color: rgb(229 231 235); /* neutral-200 */
 }
+
+/* Hide scrollbar while maintaining scroll functionality */
+.tiptap-editor-container {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+}
+
+.tiptap-editor-container::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none; /* Safari and Chrome */
+}
