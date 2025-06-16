@@ -3,10 +3,20 @@ import NewDoc from "@/pages/NewDoc";
 import DocView from "@/pages/DocView";
 import DocNotFound from "@/pages/DocNotFound";
 import Landing from "@/pages/Landing";
-import { SignedIn, SignedOut } from "@clerk/clerk-react";
+import { SignedIn, SignedOut, useAuth } from "@clerk/clerk-react";
 import { Toaster } from "sonner";
 
 export default function App() {
+  const { isLoaded } = useAuth();
+
+  if (!isLoaded) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        Loading...
+      </div>
+    );
+  }
+
   return (
     <>
       <SignedIn>
