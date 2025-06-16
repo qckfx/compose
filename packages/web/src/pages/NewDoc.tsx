@@ -229,7 +229,7 @@ export default function NewDoc() {
   }, [docs, navigate]);
 
   return (
-    <div className="p-8 max-w-2xl mx-auto flex flex-col gap-6 w-full h-full">
+    <div className="p-8 max-w-2xl mx-auto flex flex-col gap-6 w-full min-h-screen">
       {/* New draft section */}
       <div className="relative rounded-lg border bg-white p-4 shadow-sm flex flex-col gap-4">
         {/* Profile / account */}

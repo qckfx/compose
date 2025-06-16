@@ -1,12 +1,12 @@
 import { Button } from "@/components/ui/button";
 import { CheckCircle2 } from "lucide-react";
-import { useSignUp } from "@clerk/clerk-react";
+import { useSignIn } from "@clerk/clerk-react";
 
 export default function Pricing() {
-  const { signUp } = useSignUp();
+  const { signIn } = useSignIn();
 
-  const handleSignUp = () => {
-    signUp?.authenticateWithRedirect({
+  const handleAuth = () => {
+    signIn?.authenticateWithRedirect({
       strategy: "oauth_github",
       redirectUrl: "/new",
       redirectUrlComplete: "/new",
@@ -67,7 +67,7 @@ export default function Pricing() {
 
             <Button
               className="w-full bg-[#1B9847] hover:bg-[#158039] text-white text-lg py-6"
-              onClick={handleSignUp}
+              onClick={handleAuth}
             >
               Try it free
             </Button>

@@ -1,12 +1,12 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, MessageCircle } from "lucide-react";
-import { useSignUp } from "@clerk/clerk-react";
+import { useSignIn } from "@clerk/clerk-react";
 
 export default function Hero() {
-  const { signUp } = useSignUp();
+  const { signIn } = useSignIn();
 
-  const handleSignUp = () => {
-    signUp?.authenticateWithRedirect({
+  const handleAuth = () => {
+    signIn?.authenticateWithRedirect({
       strategy: "oauth_github",
       redirectUrl: "/new",
       redirectUrlComplete: "/new",
@@ -33,7 +33,7 @@ export default function Hero() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button
                 className="bg-[#1B9847] hover:bg-[#158039] text-white text-lg px-8 py-6 h-auto"
-                onClick={handleSignUp}
+                onClick={handleAuth}
               >
                 Try it free
                 <ArrowRight className="ml-2 h-5 w-5" />

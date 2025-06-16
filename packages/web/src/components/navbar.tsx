@@ -1,24 +1,15 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
-import { useSignIn, useSignUp } from "@clerk/clerk-react";
+import { useSignIn } from "@clerk/clerk-react";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const { signIn } = useSignIn();
-  const { signUp } = useSignUp();
 
-  const handleSignIn = () => {
+  const handleAuth = () => {
     signIn?.authenticateWithRedirect({
-      strategy: "oauth_github",
-      redirectUrl: "/new",
-      redirectUrlComplete: "/new",
-    });
-  };
-
-  const handleSignUp = () => {
-    signUp?.authenticateWithRedirect({
       strategy: "oauth_github",
       redirectUrl: "/new",
       redirectUrlComplete: "/new",
@@ -92,12 +83,12 @@ export default function Navbar() {
           </nav>
 
           <div className="hidden md:block">
-            <Button variant="outline" className="mr-4" onClick={handleSignIn}>
+            <Button variant="outline" className="mr-4" onClick={handleAuth}>
               Sign in
             </Button>
             <Button
               className="bg-[#1B9847] hover:bg-[#158039] text-white"
-              onClick={handleSignUp}
+              onClick={handleAuth}
             >
               Try it (free)
             </Button>
@@ -147,16 +138,12 @@ export default function Navbar() {
               Early access
             </a>
             <div className="pt-4 flex flex-col space-y-2">
-              <Button
-                variant="outline"
-                className="w-full"
-                onClick={handleSignIn}
-              >
+              <Button variant="outline" className="w-full" onClick={handleAuth}>
                 Sign in
               </Button>
               <Button
                 className="w-full bg-[#1B9847] hover:bg-[#158039] text-white"
-                onClick={handleSignUp}
+                onClick={handleAuth}
               >
                 Try it (free)
               </Button>

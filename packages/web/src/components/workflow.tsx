@@ -1,10 +1,10 @@
-import { useSignUp } from "@clerk/clerk-react";
+import { useSignIn } from "@clerk/clerk-react";
 
 export default function Workflow() {
-  const { signUp } = useSignUp();
+  const { signIn } = useSignIn();
 
-  const handleSignUp = () => {
-    signUp?.authenticateWithRedirect({
+  const handleAuth = () => {
+    signIn?.authenticateWithRedirect({
       strategy: "oauth_github",
       redirectUrl: "/new",
       redirectUrlComplete: "/new",
@@ -88,7 +88,7 @@ export default function Workflow() {
             build next.
           </p>
           <button
-            onClick={handleSignUp}
+            onClick={handleAuth}
             className="px-8 py-3 bg-[#1B9847] text-white rounded-lg hover:bg-[#158039] transition-colors font-medium"
           >
             Try it and tell us what is missing

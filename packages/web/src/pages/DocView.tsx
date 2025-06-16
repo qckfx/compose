@@ -46,7 +46,7 @@ export default function DocView() {
   }, [id, navigate]);
 
   return (
-    <div className="p-8 max-w-4xl mx-auto w-full h-screen flex flex-col gap-6 relative overflow-hidden overscroll-none">
+    <div className="p-8 max-w-4xl mx-auto w-full min-h-screen flex flex-col gap-6 relative overflow-hidden overscroll-none">
       {/* Editor container fills remaining space */}
       <div className="flex-1 min-h-0 flex flex-col">
         <TipTapEditor

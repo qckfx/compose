@@ -4,13 +4,10 @@
 @custom-variant dark (&:is(.dark *));
 
 html, body, #root {
-  height: 100dvh;
   width: 100%;
   margin: 0;
   padding: 0;
-  overflow-y: auto;
   overflow-x: hidden;
-  overscroll-behavior-y: none;
 }
 
 #root {
@@ -70,10 +67,7 @@ a {
 
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
   min-width: 320px;
-  min-height: 100vh;
 }
 
 h1 {
