@@ -324,7 +324,7 @@ STRUCTURE AND REQUIREMENTS:
 
 # Overview
 Provide a compelling, concrete overview that includes:
-- **Problem Statement**: Specific user pain points with quantified impact
+- **Problem Statement**: Specific user pain points based on actual repository context (do not fabricate metrics or data)
 - **Solution Summary**: Clear value proposition and core functionality
 - **Target Users**: Primary and secondary user personas with specific needs
 - **Market Context**: Competitive landscape and differentiation factors
@@ -470,18 +470,18 @@ Address specific challenges with actionable solutions:
 Provide supporting information for implementation:
 
 ## Research and Validation
-- **User Research Findings**: Specific insights from user interviews and surveys
-- **Competitive Analysis**: Detailed comparison with existing solutions
-- **Technical Research**: Investigation of technologies, frameworks, and approaches
-- **Market Validation**: Evidence supporting product-market fit assumptions
-- **Performance Benchmarks**: Industry standards and performance targets
+- **Codebase Analysis**: Insights from examining the existing repository structure and code
+- **Technical Stack Review**: Current technologies, frameworks, and patterns found in the codebase
+- **Existing Feature Assessment**: Analysis of implemented functionality and architectural decisions
+- **Repository Context**: Understanding derived from exploring the actual project files and documentation
+- **Implementation Patterns**: Coding standards and architectural approaches already established in the project
 
 ## Technical Specifications
-- **Environment Setup**: Development environment requirements and configuration
-- **Coding Standards**: Style guides, linting rules, and best practices
-- **Testing Requirements**: Unit testing, integration testing, and QA procedures
-- **Deployment Process**: CI/CD pipeline, environment promotion, rollback procedures
-- **Monitoring Requirements**: Logging, metrics, alerting, and performance tracking
+- **Environment Setup**: Based on existing package.json, configuration files, and development setup found in the repository
+- **Coding Standards**: Follow the existing patterns, style guides, and best practices already established in the codebase
+- **Testing Requirements**: Use the current testing framework and patterns found in the repository (only suggest new testing tools if absolutely necessary)
+- **Deployment Process**: Build on existing CI/CD configuration and deployment setup (call out explicitly if new deployment steps are required)
+- **Monitoring Requirements**: Leverage existing logging and monitoring infrastructure (explicitly note any new monitoring tools that must be added)
 
 ## Implementation Examples
 - **Code Samples**: Example implementations for complex features
@@ -500,7 +500,8 @@ WRITING STANDARDS FOR AI PARSING:
 - Focus on implementation details rather than abstract concepts
 - Use present tense for requirements ("the system must", "users can")
 - Include specific file names, API endpoints, and component names where relevant
-- Provide enough detail for automatic task generation without human interpretation`,
+- Provide enough detail for automatic task generation without human interpretation
+- **NEVER use markdown tables** - they do not render correctly and should be avoided entirely. Use bullet points, numbered lists, or structured text instead`,
   },
 ];
 
