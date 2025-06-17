@@ -148,7 +148,7 @@ export default function TipTapEditor({
             <div className="h-[calc(100vh-100px)] overflow-y-auto tiptap-editor-container">
               <EditorContent
                 editor={editor}
-                className="prose prose-lg prose-neutral text-gray-900 leading-relaxed focus:outline-none pb-4"
+                className="prose prose-lg prose-neutral text-gray-900 leading-relaxed focus:outline-none pb-8"
               />
             </div>
           </div>

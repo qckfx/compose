@@ -20,6 +20,7 @@
   letter-spacing: 0.015em;
 }
 
+
 /* Style text selection */
 .ProseMirror ::selection {
   background-color: rgb(229 231 235); /* neutral-200 */
