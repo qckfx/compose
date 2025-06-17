@@ -16,8 +16,8 @@ export default function Footer() {
                 </span>
               </a>
               <p className="text-neutral-600 text-sm mb-4">
-                Helping engineers think through their ideas and create better
-                technical documentation.
+                Helping engineers think through ideas, create PRDs, prototype,
+                and ship faster with AI.
               </p>
               <div className="flex space-x-4">
                 <a

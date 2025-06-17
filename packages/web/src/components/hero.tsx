@@ -19,16 +19,17 @@ export default function Hero() {
           <div>
             <div className="flex items-center justify-center mb-6">
               <span className="inline-block py-2 px-4 rounded-lg bg-yellow-100 text-yellow-800 text-sm font-medium border border-yellow-200">
-                🚧 Early alpha - looking for feedback
+                🚧 Early alpha - help us perfect PRD generation
               </span>
             </div>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6 text-neutral-900">
-              Create PRDs for complex features
+              Generate PRDs that AI coding agents actually understand
             </h1>
             <p className="text-lg md:text-xl text-neutral-600 mb-8 max-w-3xl mx-auto">
-              Generate comprehensive Product Requirements Documents grounded in
-              your current codebase. Perfect for Claude Code and task-master.dev
-              users who need detailed, actionable specifications.
+              Turn your codebase into detailed, actionable PRDs designed for
+              Claude Code, task-master.dev, and other AI coding workflows. Get
+              specifications grounded in your actual architecture—not generic
+              requirements.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button

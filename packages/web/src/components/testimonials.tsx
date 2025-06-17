@@ -8,17 +8,17 @@ const feedback = [
   },
   {
     quote:
-      "Finally have .cursorrules that actually match my codebase. Much better than writing them blind.",
+      "Finally have PRDs that actually understand my codebase architecture. Much better than starting from scratch.",
     author: "Mike",
     role: "Solo founder",
-    context: "Generated rules for Next.js app",
+    context: "Planning new features for React app",
   },
   {
     quote:
-      "The browser editor makes it easy to tweak the generated docs. Export to .md works perfectly.",
+      "The browser editor makes it easy to tweak the generated PRDs. Perfect for Claude Code workflows.",
     author: "Alex",
     role: "Senior engineer",
-    context: "Creating ADRs for team",
+    context: "Creating feature specs for team",
   },
 ];
 
@@ -28,10 +28,10 @@ export default function Testimonials() {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-bold mb-4 text-neutral-900">
-            Early feedback
+            Early feedback on PRD generation
           </h2>
           <p className="text-lg text-neutral-600 max-w-2xl mx-auto">
-            What engineers are saying about the tool so far.
+            What engineers are saying about codebase-grounded PRD generation.
           </p>
         </div>
 
@@ -57,17 +57,18 @@ export default function Testimonials() {
               We really want your feedback
             </h3>
             <p className="text-neutral-700 mb-6">
-              The tool does what it does well, but we are planning more features
-              and want to know what matters most to you.
+              PRD generation works well, but we want to perfect it for AI coding
+              tools like Claude Code & task-master.dev. What matters most to
+              you?
             </p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="text-left bg-neutral-50 rounded-lg p-4">
                 <h4 className="font-medium mb-2">What we want to know:</h4>
                 <ul className="text-sm text-neutral-600 space-y-1">
-                  <li>• Does this save you time vs. writing by hand?</li>
-                  <li>• What doc types are you missing?</li>
-                  <li>• How is the browser editor experience?</li>
-                  <li>• What features would make this essential?</li>
+                  <li>• Do PRDs save you time vs. writing by hand?</li>
+                  <li>• How well do PRDs work with Claude Code?</li>
+                  <li>• Are PRDs detailed enough for task-master.dev?</li>
+                  <li>• What would make PRD generation essential?</li>
                 </ul>
               </div>
               <div className="text-left bg-neutral-50 rounded-lg p-4">

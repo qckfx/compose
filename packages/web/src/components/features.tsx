@@ -108,6 +108,45 @@ export default function Features() {
             </div>
           </div>
         </div>
+
+        <div className="mt-16 bg-green-50 rounded-lg p-8 border border-green-200 max-w-4xl mx-auto">
+          <div className="text-center">
+            <h3 className="text-xl font-bold mb-4 text-neutral-900">
+              📱 Works great on mobile too
+            </h3>
+            <p className="text-lg text-neutral-700 mb-6">
+              Create and edit PRDs on the go. Our mobile-optimized editor lets
+              you generate, review, and refine technical documents from your
+              phone or tablet.
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
+              <div className="bg-white rounded-lg p-4 border">
+                <div className="font-semibold text-[#1B9847] mb-1">
+                  Generate anywhere
+                </div>
+                <div className="text-neutral-600">
+                  Create PRDs while commuting or traveling
+                </div>
+              </div>
+              <div className="bg-white rounded-lg p-4 border">
+                <div className="font-semibold text-[#1B9847] mb-1">
+                  Mobile-optimized editor
+                </div>
+                <div className="text-neutral-600">
+                  Touch-friendly editing with proper text sizing
+                </div>
+              </div>
+              <div className="bg-white rounded-lg p-4 border">
+                <div className="font-semibold text-[#1B9847] mb-1">
+                  Export on the go
+                </div>
+                <div className="text-neutral-600">
+                  Copy to clipboard or download files instantly
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
   );

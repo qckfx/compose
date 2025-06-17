@@ -17,11 +17,11 @@ export default function Pricing() {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-bold mb-4 text-neutral-900">
-            Try it free while we build
+            Try Compose for free
           </h2>
           <p className="text-lg text-neutral-600 max-w-2xl mx-auto">
-            The tool is basic but functional. We want feedback from the
-            community on what to build next.
+            Help us perfect PRD generation for Claude Code and task-master.dev
+            workflows. Your feedback shapes what we build next.
           </p>
         </div>
 
@@ -35,7 +35,7 @@ export default function Pricing() {
 
             <div className="text-center mb-8">
               <h3 className="text-2xl font-bold text-neutral-900 mb-2">
-                Full access to current tool
+                Full access to Compose by qckfx
               </h3>
               <div className="flex items-baseline justify-center mb-4">
                 <span className="text-4xl font-bold text-neutral-900">
@@ -44,19 +44,20 @@ export default function Pricing() {
                 <span className="text-neutral-500 ml-2">while we build</span>
               </div>
               <p className="text-neutral-600">
-                Connect repos, generate docs, edit in browser, export files.
+                Connect repos, generate codebase-grounded PRDs, edit in browser,
+                export files.
               </p>
             </div>
 
             <ul className="space-y-3 mb-8">
               {[
                 "Connect unlimited GitHub repos",
-                "Generate .cursorrules, TaskMaster PRDs, ADRs, RFCs",
-                "Templates from top tech companies",
+                "Generate comprehensive PRDs and custom technical docs",
+                "PRD templates optimized for Claude Code & task-master.dev",
                 "AI agent that reads your actual code",
                 "Browser editor (like Google Docs)",
                 "Export as .md/.txt or copy to clipboard",
-                "Direct feedback line to shape the product",
+                "Direct feedback line to perfect PRD generation",
               ].map((feature, i) => (
                 <li key={i} className="flex items-start">
                   <CheckCircle2 className="h-5 w-5 text-[#1B9847] mr-3 mt-0.5 flex-shrink-0" />
