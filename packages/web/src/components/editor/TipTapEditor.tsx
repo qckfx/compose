@@ -88,6 +88,23 @@ export default function TipTapEditor({
     applyCommentMarks();
   }, [initialContent, editor, applyCommentMarks]);
 
+  // Redirect all page scroll events to the editor
+  useEffect(() => {
+    const editorContainer = document.querySelector(".tiptap-editor-container");
+    if (!editorContainer) return;
+
+    const handleWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      editorContainer.scrollTop += e.deltaY;
+    };
+
+    document.addEventListener("wheel", handleWheel, { passive: false });
+
+    return () => {
+      document.removeEventListener("wheel", handleWheel);
+    };
+  }, []);
+
   return (
     <div className="flex ml-auto">
       <div className="flex-1 pr-4 max-w-screen-lg">
@@ -128,7 +145,7 @@ export default function TipTapEditor({
         )}
         <div className="bg-white border border-gray-200 shadow-md rounded-t-xl max-w-3xl mx-auto mb-0">
           <div className="p-8 pb-0">
-            <div className="h-[calc(100vh-4rem+12px)] overflow-y-auto tiptap-editor-container">
+            <div className="h-[calc(100vh-100px)] overflow-y-auto tiptap-editor-container">
               <EditorContent
                 editor={editor}
                 className="prose prose-lg prose-neutral text-gray-900 leading-relaxed focus:outline-none pb-4"

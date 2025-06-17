@@ -40,3 +40,8 @@
   height: 0;
   display: none; /* Safari and Chrome */
 }
+
+/* Prevent page scrolling */
+html, body {
+  overflow: hidden;
+}

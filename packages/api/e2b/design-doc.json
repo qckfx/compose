@@ -14,7 +14,7 @@
     "batch",
     {
       "name": "browser",
-      "configFile": "./browser.json"
+      "configFile": "../.qckfx/browser.json"
     }
   ],
   "experimentalFeatures": {
