@@ -6,6 +6,9 @@
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "build": "tsc -p . && yarn sentry:sourcemaps",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:ui": "vitest --ui",
     "sentry:sourcemaps": "sentry-cli sourcemaps inject --org qckfx --project compose-server ./dist && sentry-cli sourcemaps upload --org qckfx --project compose-server ./dist"
   },
   "dependencies": {
@@ -29,8 +32,11 @@
   },
   "devDependencies": {
     "@types/node": "^20.12.11",
+    "@vitest/ui": "^3.2.4",
     "tsx": "^4.7.0",
-    "typescript": "^5.4.5"
+    "typescript": "^5.4.5",
+    "vitest": "^3.2.4",
+    "vitest-mock-extended": "^3.1.0"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

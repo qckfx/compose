@@ -6,7 +6,7 @@
     "dev": {
       "dependsOn": ["^dev"],
       "cache": false,
-      "persistent": true      // keeps Vite / Fastify watching
+      "persistent": true // keeps Vite / Fastify watching
     },
 
     // ――― production builds ─────────────────────────────────
@@ -17,8 +17,12 @@
 
     // ――― lint / format (no outputs) ────────────────────────
     "lint": {
-      "outputs": []           // empty ⇒ don’t cache artefacts
+      "outputs": [] // empty ⇒ don’t cache artefacts
+    },
+
+    // ――― tests ──────────────────────────────────────────────
+    "test": {
+      "outputs": [] // empty ⇒ don't cache artefacts
     }
   }
 }
-
