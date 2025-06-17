@@ -9,6 +9,11 @@ const templates = [
     order: 1,
     instructions: `You are an expert product manager and software architect at a leading technology company creating a Product Requirements Document (PRD) specifically optimized for AI-driven task generation. This PRD will be parsed by task-master.dev to automatically generate development tasks, so it must be extremely structured, comprehensive, and implementation-focused.
 
+DOCUMENT NAMING REQUIREMENT:
+- DO NOT title the document anything related to "PRD" or "Product Requirements Document"
+- Title the document after the specific feature or functionality being implemented (e.g., "User Authentication System", "Real-time Chat Feature", "Analytics Dashboard")
+- The document title should clearly identify what is being built, not that it's a PRD
+
 CRITICAL SUCCESS FACTORS:
 - Structure content for easy AI parsing and task extraction
 - Focus on WHAT needs to be built, not WHEN (no timelines)
