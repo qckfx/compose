@@ -8,26 +8,40 @@ import { Markdown } from "tiptap-markdown";
 import { useFeatureFlagEnabled } from "posthog-js/react";
 import ExportDropdown from "./ExportDropdown";
 import { Link } from "react-router-dom";
+import { useAutosave } from "@/hooks/useAutosave";
+import SaveIndicator from "../SaveIndicator";
 import "./tiptap-editor.css";
 
 export default function TipTapEditor({
   docId,
   initialContent,
   onContentChange,
+  onUserContentChange,
   heading,
 }: {
   docId: string;
   initialContent: string;
   onContentChange?: (newContent: string) => void;
+  onUserContentChange?: (newContent: string) => void;
   heading?: string;
 }) {
   const wsRef = useRef<WebSocket | null>(null);
   const commentsEnabled = useFeatureFlagEnabled("comments");
 
+  // Initialize autosave hook
+  const autosave = useAutosave({ docId });
+
   const editor = useEditor({
     extensions: [StarterKit, CommentMark, Markdown],
     content: initialContent,
     editable: true,
+    onUpdate: ({ editor }) => {
+      const content =
+        (editor.storage.markdown?.getMarkdown?.() as string) ??
+        editor.getHTML();
+      onUserContentChange?.(content);
+      autosave.triggerSave(content);
+    },
   });
 
   /** helper to (re)apply unresolved comment highlights */
@@ -70,6 +84,19 @@ export default function TipTapEditor({
         onContentChange?.(msg.content);
         // Re-apply comment highlights that may have been lost
         await applyCommentMarks();
+      } else if (msg.type === "user-save") {
+        // Handle content updates from other tabs/clients
+        const currentContent =
+          (editor?.storage.markdown?.getMarkdown?.() as string) ??
+          editor?.getHTML() ??
+          "";
+
+        // Only update if the incoming content is different from current content
+        if (msg.content !== currentContent) {
+          editor?.commands.setContent(msg.content);
+          onContentChange?.(msg.content);
+          await applyCommentMarks();
+        }
       }
       /* later: status, patches, comments, etc. */
     };
@@ -106,15 +133,15 @@ export default function TipTapEditor({
   }, []);
 
   return (
-    <div className="flex ml-auto">
-      <div className="flex-1 pr-4 max-w-screen-lg">
+    <div className="flex ml-auto w-full h-full">
+      <div className="flex-1 pr-1 sm:pr-4 w-full">
         {editor && (
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-0 mb-4">
             <div className="flex items-center gap-3">
               {/* Back button */}
               <Link
                 to="/new"
-                className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-gray-300 text-gray-600 hover:bg-gray-100 hover:text-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-400"
+                className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-gray-300 text-gray-600 hover:bg-gray-100 hover:text-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-400 flex-shrink-0"
                 title="Back to drafts"
               >
                 {/* Simple arrow icon */}
@@ -135,20 +162,22 @@ export default function TipTapEditor({
               </Link>
 
               {heading && (
-                <h2 className="text-base font-semibold text-[#1B9847]">
+                <h2 className="text-sm sm:text-base font-semibold text-[#1B9847] truncate">
                   {heading}
                 </h2>
               )}
             </div>
-            <ExportDropdown editor={editor} />
+            <div className="flex-shrink-0">
+              <ExportDropdown editor={editor} />
+            </div>
           </div>
         )}
-        <div className="bg-white border border-gray-200 shadow-md rounded-t-xl max-w-3xl mx-auto mb-0">
-          <div className="p-8 pb-0">
-            <div className="h-[calc(100vh-100px)] overflow-y-auto tiptap-editor-container">
+        <div className="bg-white border border-gray-200 shadow-md rounded-t-xl w-full mx-auto mb-0">
+          <div className="p-4 sm:p-6 lg:p-8 pb-0">
+            <div className="h-[calc(100vh-120px)] sm:h-[calc(100vh-140px)] lg:h-[calc(100vh-120px)] overflow-y-auto tiptap-editor-container">
               <EditorContent
                 editor={editor}
-                className="prose prose-lg prose-neutral text-gray-900 leading-relaxed focus:outline-none pb-8"
+                className="prose prose-sm sm:prose-base lg:prose-lg prose-neutral text-gray-900 leading-relaxed focus:outline-none pb-16 sm:pb-8 max-w-none break-words"
               />
             </div>
           </div>
@@ -160,6 +189,11 @@ export default function TipTapEditor({
       {editor && commentsEnabled && (
         <SidebarThreads docId={docId} editor={editor} />
       )}
+      <SaveIndicator
+        state={autosave.state}
+        lastSaved={autosave.lastSaved}
+        error={autosave.error}
+      />
     </div>
   );
 }
