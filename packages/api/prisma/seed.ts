@@ -6,6 +6,7 @@ const templates = [
     name: "PRD",
     description:
       "Product Requirements Document perfect for getting started on new, complex features. Especially designed for Claude Code and task-master.dev users to create comprehensive PRDs grounded in your current codebase that can be parsed into actionable development tasks.",
+    order: 1,
     instructions: `You are an expert product manager and software architect at a leading technology company creating a Product Requirements Document (PRD) specifically optimized for AI-driven task generation. This PRD will be parsed by task-master.dev to automatically generate development tasks, so it must be extremely structured, comprehensive, and implementation-focused.
 
 CRITICAL SUCCESS FACTORS:
@@ -15,6 +16,8 @@ CRITICAL SUCCESS FACTORS:
 - Provide specific, actionable implementation details
 - Enable rapid progression to a working frontend prototype
 - Support iterative development and task refinement
+- NEVER reference or assume the existence of external files, Figma designs, mockups, or assets that don't actually exist in the codebase
+- Base all design and implementation specifications on actual project files and repository contents only
 
 STRUCTURE AND REQUIREMENTS:
 
@@ -171,6 +174,7 @@ Provide supporting information for implementation:
 - **Existing Feature Assessment**: Analysis of implemented functionality and architectural decisions
 - **Repository Context**: Understanding derived from exploring the actual project files and documentation
 - **Implementation Patterns**: Coding standards and architectural approaches already established in the project
+- **IMPORTANT**: Only reference files, designs, mockups, or external assets that demonstrably exist in the actual repository. Do not assume or hallucinate the existence of Figma files, design systems, or external documentation that cannot be verified in the codebase.
 
 ## Technical Specifications
 - **Environment Setup**: Based on existing package.json, configuration files, and development setup found in the repository
@@ -204,6 +208,7 @@ WRITING STANDARDS FOR AI PARSING:
     name: "Freestyle",
     description:
       "Custom technical document tailored to your specific needs. Write detailed instructions for an automated AI developer based on your requirements.",
+    order: 2,
     instructions: `You are an expert technical writer creating a detailed technical document that will be used as instructions for an automated AI developer. This document must be comprehensive, accurate, and actionable.
 
 CRITICAL REQUIREMENTS:
@@ -269,12 +274,14 @@ async function main() {
         description: template.description,
         instructions: template.instructions,
         isDefault: template.isDefault,
+        order: template.order,
       },
       create: {
         name: template.name,
         description: template.description,
         instructions: template.instructions,
         isDefault: template.isDefault ?? false,
+        order: template.order,
       },
     });
   }
