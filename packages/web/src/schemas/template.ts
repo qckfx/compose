@@ -11,6 +11,7 @@ export const TemplateSchema = z.object({
   name: z.string(),
   description: z.string(),
   isDefault: z.boolean(),
+  order: z.number(),
 });
 
 export const TemplatesResponseSchema = z.array(TemplateSchema);

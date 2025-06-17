@@ -9,8 +9,9 @@ export function templatesRoute(app: FastifyInstance) {
         name: true,
         description: true,
         isDefault: true,
+        order: true,
       },
-      orderBy: { name: "asc" },
+      orderBy: { order: "asc" },
     });
     return templates;
   });
