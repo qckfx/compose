@@ -41,3 +41,15 @@ export function registerWsRoute(fastify: FastifyInstance) {
     });
   }, 30_000);
 }
+
+export function broadcastToDoc(docId: string, message: any) {
+  const connections = sockets.get(docId);
+  if (!connections) return;
+
+  const messageStr = JSON.stringify(message);
+  connections.forEach((conn) => {
+    if (conn.readyState === conn.OPEN) {
+      conn.send(messageStr);
+    }
+  });
+}
