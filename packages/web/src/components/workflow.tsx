@@ -27,10 +27,11 @@ export default function Workflow() {
     },
     {
       number: "3",
-      title: "Generate docs with templates",
+      title: "Generate PRDs with structured templates",
       description:
-        "Choose from templates (ADRs, RFCs, TaskMaster PRDs) used by top tech companies.",
-      example: "Creates first draft based on your actual code patterns",
+        "Choose from PRD or Freestyle templates optimized for Claude Code and task-master.dev workflows.",
+      example:
+        "Creates comprehensive PRDs with implementation phases and dependencies",
     },
     {
       number: "4",
@@ -49,7 +50,7 @@ export default function Workflow() {
             How it works
           </h2>
           <p className="text-lg text-neutral-600 max-w-2xl mx-auto">
-            Connect repo → Agent reads code → Generate docs → Edit in browser →
+            Connect repo → Agent reads code → Generate PRD → Edit in browser →
             Export
           </p>
         </div>

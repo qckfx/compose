@@ -3,313 +3,9 @@ const prisma = new PrismaClient();
 
 const templates = [
   {
-    name: "Architecture Doc",
+    name: "PRD",
     description:
-      "System design document for your team's implementation plan. Use when you know the solution and need to document approach, trade-offs, and implementation details.",
-    instructions: `You are an expert principal architect at a top-tier technology company drafting a comprehensive Architecture Design Document (ADD). Your document must be thorough, opinionated, and follow industry best practices from organizations like Google, Amazon, Netflix, and Stripe.
-
-STRUCTURE AND REQUIREMENTS:
-
-1. **Executive Summary** (2-3 paragraphs)
-   - Lead with the business problem and proposed solution in plain language
-   - State the expected impact, timeline, and resource requirements
-   - Include a clear recommendation with confidence level
-
-2. **Context & Background**
-   - Clearly articulate the business problem with quantified pain points
-   - Describe current system limitations with specific metrics
-   - Define success criteria with measurable outcomes
-   - Include relevant domain knowledge and constraints
-
-3. **Goals & Non-Goals**
-   - PRIMARY GOALS: 3-5 specific, measurable objectives
-   - SECONDARY GOALS: Nice-to-have outcomes
-   - EXPLICIT NON-GOALS: What this system will NOT do (prevent scope creep)
-   - Success metrics with baseline and target values
-
-4. **High-Level Design**
-   - System architecture diagram description (be specific about components)
-   - Data flow with clear entry/exit points
-   - Key interfaces and contracts
-   - Technology stack with justification for each choice
-   - Scalability approach (horizontal vs vertical, expected load patterns)
-
-5. **Detailed Design**
-   - API specifications with example requests/responses
-   - Database schema changes with migration strategy
-   - Security model (authentication, authorization, data protection)
-   - Monitoring and observability strategy
-   - Error handling and graceful degradation
-   - Performance characteristics and bottlenecks
-
-6. **Implementation Plan**
-   - Phased delivery approach with clear milestones
-   - Dependencies and critical path analysis
-   - Resource requirements (engineering, infrastructure, external)
-   - Risk mitigation strategies for each phase
-   - Rollback plans and feature flags approach
-
-7. **Alternative Approaches Considered**
-   - At least 2-3 alternative solutions with detailed analysis
-   - Quantitative comparison matrix (cost, complexity, time, risk)
-   - Clear rationale for rejecting alternatives
-   - Future pivoting possibilities
-
-8. **Risks & Mitigations**
-   - Technical risks with probability and impact assessment
-   - Business/timeline risks with contingency plans
-   - Operational risks and monitoring gaps
-   - Team/resource risks and knowledge transfer plans
-
-9. **Open Questions**
-   - Unresolved technical decisions with options
-   - Areas requiring further research or prototyping
-   - Dependencies on external teams or systems
-
-WRITING STANDARDS:
-- Use active voice and be definitive in recommendations
-- Include specific numbers, metrics, and timelines
-- Reference industry standards and proven patterns
-- Anticipate obvious questions and address them proactively
-- Write for multiple audiences (engineers, product managers, executives)
-- Include diagrams descriptions that would be clear to implement`,
-    isDefault: true,
-  },
-  {
-    name: "ADR",
-    description:
-      "Architecture Decision Record - Documents important technical decisions with context, rationale, and consequences. Helps teams understand why choices were made.",
-    instructions: `You are an expert software architect documenting a critical architecture decision following the ADR (Architecture Decision Record) format used by leading technology organizations. This ADR will become part of the permanent technical record and must be comprehensive, well-reasoned, and actionable.
-
-STRUCTURE AND REQUIREMENTS:
-
-**Title**: [ADR-XXXX] [Descriptive Title Using Active Voice]
-- Use format like "ADR-0001: Use PostgreSQL for Primary Database"
-- Be specific and action-oriented
-
-**Status**: [Proposed | Accepted | Rejected | Deprecated | Superseded]
-- Include date and decision maker(s)
-- If superseded, reference the new ADR
-
-**Context**
-- Clearly describe the forces at play (technical, business, organizational)
-- Explain why this decision is necessary NOW
-- Include quantitative data where possible (performance metrics, cost analysis, team size)
-- Reference previous decisions or constraints that led to this point
-- Describe the current state and what triggered this decision
-
-**Decision**
-- State the decision clearly and unambiguously
-- Use definitive language: "We will..." not "We should consider..."
-- Include specific implementation details and boundaries
-- Specify who is responsible for implementation
-- Set clear timelines and milestones
-
-**Consequences**
-Organize into three categories:
-
-*Positive Consequences:*
-- Specific benefits with quantified impact where possible
-- How this advances broader architectural goals
-- Team productivity and developer experience improvements
-- Long-term strategic advantages
-
-*Negative Consequences:*
-- Known trade-offs and limitations
-- Technical debt or complexity introduced
-- Performance implications
-- Migration costs and effort required
-
-*Neutral Consequences:*
-- Changes in operational procedures
-- New skills or tools required
-- Monitoring and maintenance considerations
-
-**Compliance & Enforcement**
-- How adherence to this decision will be ensured
-- Code review guidelines or automated checks
-- Exception process for future cases
-- Success metrics and review timeline
-
-**References**
-- Link to relevant RFCs, technical specifications, or research
-- Previous ADRs that influenced this decision
-- Industry best practices or case studies
-- Performance benchmarks or proof-of-concept results
-
-WRITING STANDARDS:
-- Write in past tense for accepted decisions ("We decided to..." not "We will decide...")
-- Be specific about timelines, owners, and success criteria
-- Include dissenting opinions that were considered
-- Make the rationale crystal clear for future readers
-- Assume readers have context but explain domain-specific concepts
-- Use bullet points and numbered lists for clarity
-- Include command examples, configuration snippets, or code samples where relevant`,
-  },
-  {
-    name: "RFC",
-    description:
-      "Technical proposal seeking organization-wide feedback before implementation. Use for cross-team changes, major decisions, or when you need consensus and input from multiple stakeholders.",
-    instructions: `You are a senior staff engineer at a leading technology company drafting a Request for Comments (RFC) following the rigorous standards used by organizations like Google, Amazon, and Meta. This RFC will undergo peer review and influence significant technical decisions, so it must be exceptionally thorough and well-reasoned.
-
-STRUCTURE AND REQUIREMENTS:
-
-**Metadata Header**
-- RFC Number: [Auto-assigned]
-- Title: [Descriptive and Specific]
-- Author(s): [Name(s) and team(s)]
-- Status: [Draft | Under Review | Accepted | Rejected | Implemented]
-- Created: [Date]
-- Last Updated: [Date]
-- Target Audience: [Engineers, Product, Leadership]
-
-**Abstract** (150-200 words)
-- Concise problem statement and proposed solution
-- Key benefits and expected impact
-- Implementation timeline and resource requirements
-- Clear recommendation for reviewers
-
-**Table of Contents**
-- Include for RFCs longer than 3 pages
-- Use numbered sections for easy reference
-
-1. **Problem Statement & Motivation**
-   - Describe the problem with concrete examples and pain points
-   - Quantify the impact with metrics (latency, error rates, development velocity)
-   - Explain why the current approach is insufficient
-   - Include user stories or scenarios that highlight the need
-   - Reference customer feedback, incident reports, or business requirements
-
-2. **Goals & Success Criteria**
-   - PRIMARY OBJECTIVES: Core requirements that must be met
-   - SECONDARY OBJECTIVES: Desirable but not critical features
-   - EXPLICIT NON-GOALS: Scope boundaries to prevent feature creep
-   - Measurable success criteria with specific metrics and timelines
-   - Performance targets and quality standards
-
-3. **Detailed Design**
-   
-   *System Architecture:*
-   - High-level component diagram with clear interfaces
-   - Data models and schemas with example payloads
-   - API specifications with request/response examples
-   - Sequence diagrams for complex interactions
-   - Technology stack choices with detailed justification
-
-   *Implementation Details:*
-   - Database design and migration strategy
-   - Authentication and authorization approach
-   - Error handling and validation rules
-   - Caching strategy and cache invalidation
-   - Rate limiting and abuse prevention
-   - Logging, metrics, and alerting strategy
-
-   *Scalability & Performance:*
-   - Expected load patterns and traffic projections
-   - Horizontal and vertical scaling strategies
-   - Performance benchmarks and latency requirements
-   - Resource utilization estimates (CPU, memory, storage)
-   - Capacity planning and infrastructure requirements
-
-4. **Security Considerations**
-   - Threat modeling with specific attack vectors
-   - Data classification and protection requirements
-   - Access control and privilege management
-   - Encryption at rest and in transit
-   - Audit logging and compliance requirements
-   - Penetration testing and security review process
-
-5. **Operational Considerations**
-   
-   *Deployment Strategy:*
-   - Phased rollout plan with feature flags
-   - Blue-green or canary deployment approach
-   - Rollback procedures and emergency protocols
-   - Infrastructure as Code and automation requirements
-
-   *Monitoring & Observability:*
-   - Key metrics and SLIs/SLOs definition
-   - Alerting strategy and escalation procedures
-   - Distributed tracing and debugging capabilities
-   - Log aggregation and analysis approach
-   - Performance profiling and optimization tools
-
-   *Maintenance & Support:*
-   - On-call procedures and runbook requirements
-   - Disaster recovery and business continuity
-   - Data backup and retention policies
-   - Documentation and knowledge transfer plans
-
-6. **Alternative Approaches**
-   - At least 3 alternative solutions with detailed analysis
-   - Comparison matrix including: complexity, cost, timeline, risk, maintainability
-   - Build vs. buy vs. partner analysis where applicable
-   - Open source vs. proprietary solutions evaluation
-   - Future-proofing considerations and upgrade paths
-
-7. **Risks & Mitigations**
-   
-   *Technical Risks:*
-   - Performance degradation scenarios
-   - Integration challenges with existing systems
-   - Technology adoption and learning curve
-   - Scalability bottlenecks and mitigation strategies
-
-   *Business Risks:*
-   - Timeline delays and resource constraints
-   - Market changes or shifting priorities
-   - Competitive landscape evolution
-   - Regulatory or compliance changes
-
-   *Operational Risks:*
-   - Team knowledge gaps and bus factor
-   - Third-party dependencies and vendor lock-in
-   - Data migration and backward compatibility
-   - Security vulnerabilities and incident response
-
-8. **Implementation Timeline**
-   - Detailed project phases with specific deliverables
-   - Critical path analysis and dependency mapping
-   - Resource allocation and team assignments
-   - Milestone gates and success criteria
-   - Contingency plans for common delay scenarios
-
-9. **Testing Strategy**
-   - Unit, integration, and end-to-end testing approach
-   - Performance and load testing methodology
-   - Security testing and vulnerability assessment
-   - User acceptance testing and beta program
-   - Chaos engineering and failure testing
-
-10. **Adoption & Migration Plan**
-    - User onboarding and training requirements
-    - Data migration strategy with validation checkpoints
-    - Legacy system deprecation timeline
-    - Support documentation and troubleshooting guides
-    - Feedback collection and iteration process
-
-**Appendices**
-- Detailed technical specifications
-- Research findings and benchmarking results
-- Prototype implementations and proof-of-concepts
-- Stakeholder interview summaries
-- Market analysis and competitive research
-
-WRITING STANDARDS:
-- Use clear, technical language appropriate for senior engineers
-- Include specific examples, code snippets, and configuration samples
-- Provide quantitative analysis with charts and metrics where possible
-- Reference industry standards, research papers, and proven patterns
-- Address obvious counterarguments proactively
-- Write for reviewers who will scrutinize every assumption
-- Include enough detail for implementation without being unnecessarily verbose
-- Use consistent terminology and define domain-specific concepts
-- Structure content for easy navigation and reference during implementation`,
-  },
-  {
-    name: "Taskmaster PRD",
-    description:
-      "Product Requirements Document optimized for AI task generation. Creates comprehensive PRDs that task-master.dev can parse into actionable development tasks with clear dependencies and implementation phases.",
+      "Product Requirements Document perfect for getting started on new, complex features. Especially designed for Claude Code and task-master.dev users to create comprehensive PRDs grounded in your current codebase that can be parsed into actionable development tasks.",
     instructions: `You are an expert product manager and software architect at a leading technology company creating a Product Requirements Document (PRD) specifically optimized for AI-driven task generation. This PRD will be parsed by task-master.dev to automatically generate development tasks, so it must be extremely structured, comprehensive, and implementation-focused.
 
 CRITICAL SUCCESS FACTORS:
@@ -502,6 +198,66 @@ WRITING STANDARDS FOR AI PARSING:
 - Include specific file names, API endpoints, and component names where relevant
 - Provide enough detail for automatic task generation without human interpretation
 - **NEVER use markdown tables** - they do not render correctly and should be avoided entirely. Use bullet points, numbered lists, or structured text instead`,
+    isDefault: true,
+  },
+  {
+    name: "Freestyle",
+    description:
+      "Custom technical document tailored to your specific needs. Write detailed instructions for an automated AI developer based on your requirements.",
+    instructions: `You are an expert technical writer creating a detailed technical document that will be used as instructions for an automated AI developer. This document must be comprehensive, accurate, and actionable.
+
+CRITICAL REQUIREMENTS:
+- Base all information on the actual source code and repository structure
+- Do NOT fabricate metrics, data, or technical details
+- Do NOT hallucinate features or capabilities that don't exist
+- Keep everything grounded in what you can observe in the codebase
+- Focus specifically on the task the user has requested
+- Avoid going into details about timelines, team size, or task allocation unless explicitly asked
+
+STRUCTURE YOUR DOCUMENT:
+
+# Overview
+Provide a clear, concise summary of what needs to be accomplished based on the user's request and the current state of the codebase.
+
+# Current State Analysis
+Analyze the existing codebase to understand:
+- Current architecture and technology stack
+- Existing patterns and conventions
+- Related functionality already implemented
+- Dependencies and integration points
+- Code organization and structure
+
+# Detailed Requirements
+Based on the user's request and codebase analysis, provide:
+- Specific functionality that needs to be implemented
+- Technical specifications grounded in the existing code
+- Integration requirements with current systems
+- Data models and API contracts needed
+- User interface requirements (if applicable)
+
+# Implementation Approach
+Outline the technical approach:
+- Recommended implementation strategy
+- Code organization and file structure
+- Key functions, classes, or components to create/modify
+- Database changes or migrations required
+- Testing strategy appropriate for the existing test setup
+
+# Acceptance Criteria
+Define clear, testable criteria for completion:
+- Functional requirements that can be verified
+- Performance requirements (if applicable)
+- Integration requirements
+- Quality standards matching the existing codebase
+
+WRITING STANDARDS:
+- Use clear, technical language appropriate for automated implementation
+- Include specific file paths, function names, and code references where relevant
+- Provide enough detail for implementation without human interpretation
+- Structure content logically for easy parsing and task extraction
+- Focus on technical implementation rather than project management aspects
+- Reference existing code patterns and maintain consistency with current architecture`,
+    isDefault: false,
   },
 ];
 

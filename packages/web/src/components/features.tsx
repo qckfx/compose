@@ -2,30 +2,32 @@ import { CheckCircle2, AlertCircle } from "lucide-react";
 
 const problems = [
   {
-    title: "Writing .cursorrules by hand is tedious",
+    title: "Writing PRDs for complex features is time-consuming",
     description:
-      "You know what patterns you use, but explaining them clearly to Cursor takes forever",
-    solution: "Our agent reads your code and writes the .cursorrules for you",
-  },
-  {
-    title: "TaskMaster needs a PRD for every run",
-    description:
-      "Bad PRDs = bad output. Writing good PRDs by hand is time-consuming and error-prone.",
-    solution: "Generate TaskMaster PRDs from your codebase context in minutes",
-  },
-  {
-    title: "Cursor does not understand your codebase yet",
-    description:
-      "Asking Cursor to generate your .cursorrules will not work - it does not know your patterns",
+      "You know what needs to be built, but documenting it properly for AI tools takes hours",
     solution:
-      "Our tool is designed exactly for this: reading code to create documentation",
+      "Generate comprehensive PRDs grounded in your actual codebase patterns",
   },
   {
-    title: "Bad documentation causes AI hallucinations",
+    title: "Claude Code and TaskMaster need detailed requirements",
     description:
       "Vague specs lead to wrong code, bugs, and wasted time debugging AI mistakes",
     solution:
-      "Better docs because our agent actually understands your implementation",
+      "Create detailed, structured PRDs that AI tools can parse into actionable tasks",
+  },
+  {
+    title: "Generic PRDs don't understand your codebase",
+    description:
+      "Writing PRDs without understanding existing patterns leads to inconsistent implementations",
+    solution:
+      "Our agent reads your code first, then creates PRDs that match your architecture",
+  },
+  {
+    title: "Starting complex features without proper planning",
+    description:
+      "Jumping into implementation without clear requirements leads to scope creep and technical debt",
+    solution:
+      "Structured PRDs that break down features into logical, implementable phases",
   },
 ];
 
@@ -86,26 +88,22 @@ export default function Features() {
                 View the open source repo →
               </a>
             </p>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-              <div className="bg-white rounded-lg p-3 border">
-                <div className="font-mono font-bold text-[#1B9847]">
-                  .cursorrules
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm max-w-md mx-auto">
+              <div className="bg-white rounded-lg p-4 border">
+                <div className="font-mono font-bold text-[#1B9847] text-lg">
+                  PRD
                 </div>
-                <div className="text-neutral-600">For Cursor IDE</div>
-              </div>
-              <div className="bg-white rounded-lg p-3 border">
-                <div className="font-mono font-bold text-[#1B9847]">
-                  TaskMaster PRD
+                <div className="text-neutral-600">
+                  Perfect for Claude Code & task-master.dev
                 </div>
-                <div className="text-neutral-600">For task-master.dev</div>
               </div>
-              <div className="bg-white rounded-lg p-3 border">
-                <div className="font-mono font-bold text-[#1B9847]">ADRs</div>
-                <div className="text-neutral-600">Architecture decisions</div>
-              </div>
-              <div className="bg-white rounded-lg p-3 border">
-                <div className="font-mono font-bold text-[#1B9847]">RFCs</div>
-                <div className="text-neutral-600">Feature specs</div>
+              <div className="bg-white rounded-lg p-4 border">
+                <div className="font-mono font-bold text-[#1B9847] text-lg">
+                  Freestyle
+                </div>
+                <div className="text-neutral-600">
+                  Custom technical documents
+                </div>
               </div>
             </div>
           </div>
