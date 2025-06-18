@@ -7,7 +7,20 @@ html, body, #root {
   width: 100%;
   margin: 0;
   padding: 0;
-  overflow-x: hidden;
+  overflow: hidden;
+}
+
+html {
+  background-color: #fafafa;
+}
+
+html, body {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+html::-webkit-scrollbar, body::-webkit-scrollbar {
+  display: none;
 }
 
 #root {
@@ -28,6 +41,10 @@ html, body, #root {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   --radius: 0.625rem;
+  --safe-top: env(safe-area-inset-top);
+  --safe-bottom: env(safe-area-inset-bottom);
+  --safe-left: env(safe-area-inset-left);
+  --safe-right: env(safe-area-inset-right);
   --background: oklch(1 0 0);
   --foreground: oklch(0.141 0.005 285.823);
   --card: oklch(1 0 0);
@@ -79,7 +96,7 @@ h1 {
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
-    background-color: #ffffff;
+    background-color: #fafafa;
   }
   a:hover {
     color: #747bff;
@@ -170,6 +187,28 @@ h1 {
 /* Remove focus outline ring from TipTap editor */
 .ProseMirror:focus {
   outline: none !important;
+}
+
+/* Page-specific layout styles */
+.scrollable-page {
+  overflow-y: auto;
+  overscroll-behavior: none;
+}
+
+.landing-page {
+  overflow-y: auto;
+}
+
+.mobile-adjusted {
+  max-height: 95vh;
+  overflow-y: auto;
+}
+
+@media (max-width: 640px) {
+  .mobile-adjusted {
+    max-height: 95vh;
+    overflow-y: auto;
+  }
 }
 
 /* Hide scrollbars while maintaining scroll functionality */

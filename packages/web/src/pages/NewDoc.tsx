@@ -73,6 +73,7 @@ export default function NewDoc() {
   );
   const promptRef = useRef<HTMLTextAreaElement>(null);
   const [hasPrompt, setHasPrompt] = useState(false);
+  const draftHistoryRef = useRef<HTMLDivElement>(null);
 
   // Fetch repositories on mount
   useEffect(() => {
@@ -228,8 +229,25 @@ export default function NewDoc() {
     });
   }, [docs, navigate]);
 
+  // Redirect all page scroll events to the draft history
+  useEffect(() => {
+    const draftHistoryContainer = draftHistoryRef.current;
+    if (!draftHistoryContainer) return;
+
+    const handleWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      draftHistoryContainer.scrollTop += e.deltaY;
+    };
+
+    document.addEventListener("wheel", handleWheel, { passive: false });
+
+    return () => {
+      document.removeEventListener("wheel", handleWheel);
+    };
+  }, []);
+
   return (
-    <div className="p-8 max-w-2xl mx-auto flex flex-col gap-6 w-full min-h-screen">
+    <div className="p-8 pb-16 sm:pb-0 max-w-2xl mx-auto flex flex-col gap-4 w-full min-h-screen scrollable-page mobile-adjusted">
       {/* New draft section */}
       <div className="relative rounded-lg border bg-white p-4 shadow-sm flex flex-col gap-4">
         {/* Profile / account */}
@@ -341,23 +359,26 @@ export default function NewDoc() {
       </div>
 
       {/* Draft history */}
-      <div
-        className="flex flex-col flex-1 min-h-0 overflow-y-auto rounded-lg"
-        role="list"
-      >
-        <h2 className="sticky top-0 bg-white z-10 text-base font-semibold text-[#1B9847] px-2 py-1 border-b border-[#1B9847]/30">
+      <div className="flex flex-col flex-1 min-h-0 gap-1">
+        <h2 className="text-base font-semibold text-[#1B9847] px-2 pt-1 pb-1.5 border-b border-[#1B9847]/30">
           Draft history
         </h2>
-
-        {docs.length === 0 ? (
-          <div className="text-sm text-gray-500 text-center py-4">
-            No drafts yet.
-          </div>
-        ) : (
-          <div className="flex flex-col gap-2 p-2" role="presentation">
-            {renderedDocs}
-          </div>
-        )}
+        <div
+          ref={draftHistoryRef}
+          className="flex flex-col flex-1 min-h-0 overflow-y-auto rounded-lg pt-1 hide-scrollbar"
+          style={{ overscrollBehavior: "auto" }}
+          role="list"
+        >
+          {docs.length === 0 ? (
+            <div className="text-sm text-gray-500 text-center py-4">
+              No drafts yet.
+            </div>
+          ) : (
+            <div className="flex flex-col gap-2 px-2 pb-2" role="presentation">
+              {renderedDocs}
+            </div>
+          )}
+        </div>
       </div>
 
       {showErrors && (!selectedRepo || !hasPrompt) && (

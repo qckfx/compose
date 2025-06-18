@@ -46,35 +46,23 @@ export default function DocView() {
   }, [id, navigate]);
 
   return (
-    <>
-      <style>{`
-        html, body {
-          overflow: hidden;
-          scrollbar-width: none;
-          -ms-overflow-style: none;
-        }
-        html::-webkit-scrollbar, body::-webkit-scrollbar {
-          display: none;
-        }
-      `}</style>
-      <div className="doc-view-page p-2 sm:p-6 lg:p-8 w-full sm:max-w-4xl mx-auto h-screen flex flex-col gap-4 sm:gap-6 relative overflow-hidden overscroll-none">
-        {/* Editor container fills remaining space */}
-        <div className="flex-1 min-h-0 flex flex-col">
-          <TipTapEditor
-            docId={id!}
-            initialContent={content}
-            onContentChange={setContent}
-            heading="Editing draft"
-          />
-        </div>
-        {!content && (
-          <LoadingSpinner
-            states={DOC_LOADING_STATES}
-            cycleTime={4500 * 8}
-            overlay
-          />
-        )}
+    <div className="doc-view-page p-2 sm:p-6 lg:p-8 pt-[calc(0.5rem+var(--safe-top))] pb-[var(--safe-bottom)] w-full sm:max-w-4xl mx-auto min-h-screen flex flex-col gap-4 sm:gap-6 relative sm:overflow-hidden overscroll-none">
+      {/* Editor container fills remaining space */}
+      <div className="flex-1 min-h-0 flex flex-col">
+        <TipTapEditor
+          docId={id!}
+          initialContent={content}
+          onContentChange={setContent}
+          heading="Editing draft"
+        />
       </div>
-    </>
+      {!content && (
+        <LoadingSpinner
+          states={DOC_LOADING_STATES}
+          cycleTime={4500 * 8}
+          overlay
+        />
+      )}
+    </div>
   );
 }

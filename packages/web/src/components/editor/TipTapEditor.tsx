@@ -35,6 +35,7 @@ export default function TipTapEditor({
     extensions: [StarterKit, CommentMark, Markdown],
     content: initialContent,
     editable: true,
+    autofocus: false,
     onUpdate: ({ editor }) => {
       const content =
         (editor.storage.markdown?.getMarkdown?.() as string) ??
@@ -69,6 +70,7 @@ export default function TipTapEditor({
       });
 
     editor.commands.setTextSelection(0);
+    editor.commands.focus(0, { scrollIntoView: false });
   }, [docId, editor, commentsEnabled]);
 
   useEffect(() => {
@@ -79,7 +81,7 @@ export default function TipTapEditor({
     ws.onmessage = async (ev) => {
       const msg = JSON.parse(ev.data);
       if (msg.type === "draft") {
-        editor?.commands.setContent(msg.content);
+        editor?.commands.setContent(msg.content, false);
         // Notify parent that new content has arrived so it can hide loaders, etc.
         onContentChange?.(msg.content);
         // Re-apply comment highlights that may have been lost
@@ -110,10 +112,24 @@ export default function TipTapEditor({
     const currentMarkdown =
       (editor.storage.markdown?.getMarkdown?.() as string) ?? editor.getHTML();
     if (initialContent !== currentMarkdown) {
-      editor.commands.setContent(initialContent);
+      editor.commands.setContent(initialContent, false);
     }
     applyCommentMarks();
   }, [initialContent, editor, applyCommentMarks]);
+
+  // Ensure proper initial scroll position on mobile
+  useEffect(() => {
+    if (window.innerWidth <= 640 && editor) {
+      // Reset scroll positions immediately
+      window.scrollTo(0, 0);
+      const editorContainer = document.querySelector(
+        ".tiptap-editor-container",
+      );
+      if (editorContainer) {
+        editorContainer.scrollTop = 0;
+      }
+    }
+  }, [editor, initialContent]);
 
   // Redirect all page scroll events to the editor
   useEffect(() => {
@@ -174,10 +190,10 @@ export default function TipTapEditor({
         )}
         <div className="bg-white border border-gray-200 shadow-md rounded-t-xl w-full mx-auto mb-0">
           <div className="p-4 sm:p-6 lg:p-8 pb-0">
-            <div className="h-[calc(100vh-120px)] sm:h-[calc(100vh-140px)] lg:h-[calc(100vh-120px)] overflow-y-auto tiptap-editor-container">
+            <div className="h-[calc(100vh-200px-var(--safe-top)-var(--safe-bottom))] sm:h-[calc(100vh-140px)] lg:h-[calc(100vh-120px)] overflow-y-auto tiptap-editor-container">
               <EditorContent
                 editor={editor}
-                className="prose prose-sm sm:prose-base lg:prose-lg prose-neutral text-gray-900 leading-relaxed focus:outline-none pb-16 sm:pb-8 max-w-none break-words"
+                className="prose prose-sm sm:prose-base lg:prose-lg prose-neutral text-gray-900 leading-relaxed focus:outline-none pb-8 max-w-none break-words"
               />
             </div>
           </div>

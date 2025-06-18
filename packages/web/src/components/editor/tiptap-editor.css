@@ -32,63 +32,52 @@
 
 /* Hide scrollbar while maintaining scroll functionality */
 .tiptap-editor-container {
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* Internet Explorer 10+ */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
 .tiptap-editor-container::-webkit-scrollbar {
-  width: 0;
-  height: 0;
-  display: none; /* Safari and Chrome */
+  display: none;
 }
 
-/* Hide scrollbar on DocView page body */
-.doc-view-page {
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* Internet Explorer 10+ */
-  overflow: hidden;
-}
-
-.doc-view-page::-webkit-scrollbar {
-  width: 0;
-  height: 0;
-  display: none; /* Safari and Chrome */
-}
 
 /* Mobile text overflow handling */
 @media (max-width: 640px) {
-  .prose {
+  .prose, .prose code, .prose pre {
+    max-width: 100%;
     overflow-wrap: break-word;
     word-wrap: break-word;
-    /* Removed aggressive word-break: break-word */
   }
   
   .prose h1 {
-    font-size: 2rem; /* Larger for better prominence */
+    font-size: 2rem;
     line-height: 1.3;
   }
   
   .prose h2 {
-    font-size: 1.5rem; /* Keep the same */
+    font-size: 1.5rem;
     line-height: 1.4;
   }
   
   .prose h3 {
-    font-size: 1.125rem; /* Smaller, closer to body text */
+    font-size: 1.125rem;
     line-height: 1.4;
   }
   
   .prose code {
     word-break: break-all;
-    overflow-wrap: break-word;
-    font-size: 0.875rem; /* Slightly smaller code */
+    font-size: 0.875rem;
   }
   
   .prose pre {
     overflow-x: auto;
     white-space: pre-wrap;
-    word-wrap: break-word;
-    font-size: 0.8rem; /* Smaller code blocks */
+    font-size: 0.8rem;
+  }
+  
+  .tiptap-editor-container {
+    touch-action: pan-y;
+    -webkit-overflow-scrolling: touch;
   }
 }
 
