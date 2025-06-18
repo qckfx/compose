@@ -3,6 +3,7 @@ import { v4 as uuid } from "uuid";
 import { Sandbox } from "e2b";
 import { z } from "zod";
 import { sockets } from "../wsHub.js";
+import { env } from "../utils/env.js";
 
 export function startDraftRoute(app: FastifyInstance) {
   app.post("/api/start-draft", async (req, res) => {
@@ -87,8 +88,8 @@ async function runAgentJob({
   const sandbox = await Sandbox.create("composer", {
     timeoutMs: 1000 * 60 * 20,
     envs: {
-      LLM_API_KEY: process.env.LLM_API_KEY,
-      LLM_BASE_URL: process.env.LLM_BASE_URL,
+      LLM_API_KEY: env.LLM_API_KEY,
+      LLM_BASE_URL: env.LLM_BASE_URL,
     },
   });
   await sandbox.commands.run("git clone " + repoUrl + " repo");
@@ -113,7 +114,7 @@ IMPORTANT INSTRUCTIONS:
     { requestTimeoutMs: 1000 * 60 * 20, timeoutMs: 1000 * 60 * 20 },
   );
 
-  let designDoc = null;
+  let designDoc: string | null = null;
   while (!designDoc) {
     try {
       designDoc = await sandbox.files.read("repo/design-doc.md");

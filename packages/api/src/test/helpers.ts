@@ -1,4 +1,4 @@
-import { FastifyInstance } from "fastify";
+import { FastifyInstance, InjectOptions } from "fastify";
 import { PrismaClient } from "@prisma/client";
 import { mockDeep, mockReset } from "vitest-mock-extended";
 import { vi } from "vitest";
@@ -9,7 +9,10 @@ vi.mock("../middleware/auth.js", () => ({
   authMiddleware: (app: FastifyInstance) => {
     // Mock auth middleware that adds test user to all requests
     app.addHook("preHandler", async (request) => {
-      request.auth = { userId: "test-user-123" };
+      request.auth = {
+        userId: "test-user-123",
+        email: "test@example.com",
+      };
     });
   },
 }));
@@ -48,9 +51,9 @@ export const createMockDoc = (overrides = {}) => ({
 export async function injectRequest(
   app: FastifyInstance,
   options: {
-    method: string;
+    method: InjectOptions["method"];
     url: string;
-    payload?: unknown;
+    payload?: string | object | Buffer | NodeJS.ReadableStream;
     headers?: Record<string, string>;
   },
 ) {

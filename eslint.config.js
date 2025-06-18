@@ -27,16 +27,9 @@ export default [
       ecmaVersion: 2023,
       sourceType: "module",
       globals: {
+        ...globals.node,
         ...browserGlobalsReadonly,
-        console: "readonly",
-        process: "readonly",
-        Buffer: "readonly",
-        __dirname: "readonly",
-        __filename: "readonly",
-        module: "readonly",
-        require: "readonly",
-        exports: "readonly",
-        global: "readonly",
+        NodeJS: "readonly",
       },
     },
     plugins: {
@@ -81,6 +74,7 @@ export default [
       ...(await import("@typescript-eslint/eslint-plugin")).default.configs
         .recommended.rules,
       "prettier/prettier": "error",
+      "no-undef": "off", // TypeScript handles this better than ESLint
       "@typescript-eslint/no-unused-vars": [
         "warn",
         {
