@@ -35,7 +35,7 @@ WORKDIR /app
 # WORKDIR /app/packages/api
 RUN yarn workspace api prisma generate
 RUN --mount=type=secret,id=sentry_auth_token \
-    SENTRY_AUTH_TOKEN=$(cat /run/secrets/sentry_auth_token) \
+    export SENTRY_AUTH_TOKEN="$(cat /run/secrets/sentry_auth_token)" && \
     yarn workspace api build
 WORKDIR /app
 
