@@ -10,6 +10,32 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ["react", "react-dom", "react-router-dom"],
+          clerk: ["@clerk/clerk-react"],
+          editor: [
+            "@tiptap/core",
+            "@tiptap/react",
+            "@tiptap/starter-kit",
+            "@tiptap/extension-highlight",
+            "@tiptap/extension-placeholder",
+          ],
+          motion: ["framer-motion"],
+          analytics: ["posthog-js"],
+          ui: [
+            "@radix-ui/react-select",
+            "@radix-ui/react-slot",
+            "@radix-ui/react-tooltip",
+            "lucide-react",
+          ],
+        },
+      },
+    },
+    chunkSizeWarningLimit: 600,
+  },
   server: {
     proxy: {
       "/api": {

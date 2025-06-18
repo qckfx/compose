@@ -73,6 +73,7 @@ export default function NewDoc() {
   );
   const promptRef = useRef<HTMLTextAreaElement>(null);
   const [hasPrompt, setHasPrompt] = useState(false);
+  const [isRepoSelectOpen, setIsRepoSelectOpen] = useState(false);
   const draftHistoryRef = useRef<HTMLDivElement>(null);
 
   // Fetch repositories on mount
@@ -235,6 +236,16 @@ export default function NewDoc() {
     if (!draftHistoryContainer) return;
 
     const handleWheel = (e: WheelEvent) => {
+      // Don't intercept scrolls when repository select dropdown is open
+      if (isRepoSelectOpen) return;
+
+      // Don't intercept scrolls within textarea elements
+      const target = e.target as Element;
+      if (target && target.tagName === "TEXTAREA") return;
+
+      // Don't intercept scrolls within select dropdown content
+      if (target && target.closest("[data-radix-select-content]")) return;
+
       e.preventDefault();
       draftHistoryContainer.scrollTop += e.deltaY;
     };
@@ -244,7 +255,7 @@ export default function NewDoc() {
     return () => {
       document.removeEventListener("wheel", handleWheel);
     };
-  }, []);
+  }, [isRepoSelectOpen]);
 
   return (
     <div className="p-8 pb-16 sm:pb-0 max-w-2xl mx-auto flex flex-col gap-4 w-full min-h-screen scrollable-page mobile-adjusted">
@@ -270,6 +281,7 @@ export default function NewDoc() {
               repositories.find((r) => r.id === value) ?? undefined,
             )
           }
+          onOpenChange={setIsRepoSelectOpen}
         >
           <SelectTrigger
             className={classNames({
