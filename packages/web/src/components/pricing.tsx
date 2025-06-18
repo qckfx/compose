@@ -57,7 +57,7 @@ export default function Pricing() {
                 "AI agent that reads your actual code",
                 "Browser editor (like Google Docs)",
                 "Export as .md/.txt or copy to clipboard",
-                "Direct feedback line to perfect PRD generation",
+                "Direct feedback channel to developers",
               ].map((feature, i) => (
                 <li key={i} className="flex items-start">
                   <CheckCircle2 className="h-5 w-5 text-[#1B9847] mr-3 mt-0.5 flex-shrink-0" />
