@@ -1,0 +1,40 @@
+/* Minimal scrollbar styling for Command component */
+[data-slot="command-list"] {
+  scrollbar-width: thin;
+  scrollbar-color: #e5e7eb transparent;
+}
+
+[data-slot="command-list"]::-webkit-scrollbar {
+  width: 8px;
+}
+
+[data-slot="command-list"]::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+[data-slot="command-list"]::-webkit-scrollbar-thumb {
+  background: #e5e7eb;
+  border-radius: 4px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+[data-slot="command-list"]::-webkit-scrollbar-thumb:hover {
+  background: #d1d5db;
+  background-clip: content-box;
+}
+
+/* Dark mode support */
+.dark [data-slot="command-list"] {
+  scrollbar-color: #374151 transparent;
+}
+
+.dark [data-slot="command-list"]::-webkit-scrollbar-thumb {
+  background: #374151;
+  background-clip: content-box;
+}
+
+.dark [data-slot="command-list"]::-webkit-scrollbar-thumb:hover {
+  background: #4b5563;
+  background-clip: content-box;
+}

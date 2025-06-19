@@ -3,12 +3,19 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { UserButton } from "@clerk/clerk-react";
 import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem,
-} from "@/components/ui/select";
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Check, ChevronsUpDown } from "lucide-react";
 import classNames from "classnames";
 import apiClient from "@/api/apiClient";
 import { routes } from "@/api/routes";
@@ -74,6 +81,7 @@ export default function NewDoc() {
   const promptRef = useRef<HTMLTextAreaElement>(null);
   const [hasPrompt, setHasPrompt] = useState(false);
   const [isRepoSelectOpen, setIsRepoSelectOpen] = useState(false);
+  const [searchValue, setSearchValue] = useState("");
   const draftHistoryRef = useRef<HTMLDivElement>(null);
 
   // Fetch repositories on mount
@@ -272,59 +280,93 @@ export default function NewDoc() {
           Start a new draft
         </h2>
 
-        {/* Repository selector using shadcn Select */}
-        <Select
-          value={selectedRepo?.id}
-          disabled={reposLoading}
-          onValueChange={(value) =>
-            setSelectedRepo(
-              repositories.find((r) => r.id === value) ?? undefined,
-            )
-          }
-          onOpenChange={setIsRepoSelectOpen}
+        {/* Repository selector with search */}
+        <Popover
+          open={isRepoSelectOpen}
+          onOpenChange={(open) => {
+            setIsRepoSelectOpen(open);
+            if (open) {
+              setSearchValue(""); // Clear search when opening
+            }
+          }}
         >
-          <SelectTrigger
-            className={classNames({
-              "ring-1 ring-red-500": showErrors && !selectedRepo,
-              "opacity-50 cursor-not-allowed": reposLoading,
-            })}
-          >
-            <SelectValue
-              placeholder={
-                reposLoading ? "Loading repositories…" : "Select a repository…"
-              }
-            />
-            {reposLoading && (
-              <svg
-                className="animate-spin h-4 w-4 ml-2 text-gray-500"
-                viewBox="0 0 24 24"
-                aria-hidden="true"
-              >
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                  fill="none"
-                />
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
-                />
-              </svg>
-            )}
-          </SelectTrigger>
-          <SelectContent>
-            {repositories.map((r) => (
-              <SelectItem key={r.id} value={r.id}>
-                {r.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+          <PopoverTrigger asChild>
+            <button
+              className={classNames(
+                "flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+                {
+                  "ring-1 ring-red-500": showErrors && !selectedRepo,
+                  "opacity-50 cursor-not-allowed": reposLoading,
+                },
+              )}
+              disabled={reposLoading}
+            >
+              <span className={!selectedRepo ? "text-muted-foreground" : ""}>
+                {selectedRepo?.name ||
+                  (reposLoading
+                    ? "Loading repositories…"
+                    : "Select a repository…")}
+              </span>
+              <div className="flex items-center">
+                {reposLoading ? (
+                  <svg
+                    className="animate-spin h-4 w-4 text-gray-500"
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                      fill="none"
+                    />
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                    />
+                  </svg>
+                ) : (
+                  <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50" />
+                )}
+              </div>
+            </button>
+          </PopoverTrigger>
+          <PopoverContent className="w-full p-0" align="start" sideOffset={5}>
+            <Command value={searchValue} onValueChange={setSearchValue}>
+              <CommandInput placeholder="Search repositories..." autoFocus />
+              <CommandList>
+                <CommandEmpty>No repository found.</CommandEmpty>
+                <CommandGroup>
+                  {repositories.map((repo) => (
+                    <CommandItem
+                      key={repo.id}
+                      value={repo.name}
+                      onSelect={() => {
+                        setSelectedRepo(repo);
+                        setIsRepoSelectOpen(false);
+                        setSearchValue(""); // Clear search on selection
+                      }}
+                    >
+                      <Check
+                        className={classNames(
+                          "mr-2 h-4 w-4",
+                          selectedRepo?.id === repo.id
+                            ? "opacity-100"
+                            : "opacity-0",
+                        )}
+                      />
+                      {repo.name}
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              </CommandList>
+            </Command>
+          </PopoverContent>
+        </Popover>
 
         {/* Prompt textarea (uncontrolled) */}
         <textarea

@@ -1,2 +1,5 @@
 - use yarn, we use yarn workspaces so like yarn workspace [api, web].
 - do not revert back to javascript style checking that looks like this: `if (err && typeof err === 'object' && 'response' in err ...`. Use types, follow best practices for typescript.
+- use yarn, not npx
+- for shadcn components, use the shadcn cli: shadcn@latest add <component>
+- use yarn workspaces, e.g. yarn workspace web dlx shadcn@latest add command
