@@ -29,6 +29,20 @@ const problems = [
     solution:
       "Structured PRDs that break down features into logical, implementable phases",
   },
+  {
+    title: "Debugging complex issues without systematic approach",
+    description:
+      "Spending hours hunting bugs without a clear investigation strategy or root cause analysis",
+    solution:
+      "Generate bug fix plans that guide systematic code investigation and propose targeted solutions",
+  },
+  {
+    title: "Planning refactoring without breaking existing functionality",
+    description:
+      "Code improvements often introduce bugs because refactoring lacks proper structure and testing strategy",
+    solution:
+      "Create detailed refactoring guides that maintain functionality while improving code quality",
+  },
 ];
 
 export default function Features() {
@@ -88,7 +102,7 @@ export default function Features() {
                 View the open source repo →
               </a>
             </p>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm max-w-md mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm max-w-3xl mx-auto">
               <div className="bg-white rounded-lg p-4 border">
                 <div className="font-mono font-bold text-[#1B9847] text-lg">
                   PRD
@@ -99,11 +113,17 @@ export default function Features() {
               </div>
               <div className="bg-white rounded-lg p-4 border">
                 <div className="font-mono font-bold text-[#1B9847] text-lg">
-                  Freestyle
+                  Bug Fix
                 </div>
                 <div className="text-neutral-600">
-                  Custom technical documents
+                  Systematic root cause analysis
                 </div>
+              </div>
+              <div className="bg-white rounded-lg p-4 border">
+                <div className="font-mono font-bold text-[#1B9847] text-lg">
+                  Refactoring
+                </div>
+                <div className="text-neutral-600">Code improvement guides</div>
               </div>
             </div>
           </div>

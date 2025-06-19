@@ -25,11 +25,12 @@ export default function Hero() {
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6 text-neutral-900">
               Generate PRDs that AI coding agents actually understand
             </h1>
-            <p className="text-lg md:text-xl text-neutral-600 mb-8 max-w-3xl mx-auto">
+            <p className="text-lg md:text-xl text-neutral-600 mb-4 max-w-3xl mx-auto">
               Turn your codebase into detailed, actionable PRDs designed for
-              Claude Code, task-master.dev, and other AI coding workflows. Get
-              specifications grounded in your actual architecture—not generic
-              requirements.
+              Claude Code, task-master.dev, and other AI coding workflows.
+            </p>
+            <p className="text-base md:text-lg text-neutral-500 mb-8">
+              New Features • Bug Fixes • Refactoring
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button
@@ -47,7 +48,8 @@ export default function Hero() {
               </Button>
             </div>
             <div className="mt-8 text-sm text-neutral-500">
-              Generate codebase-grounded PRDs • Edit in browser • Export as .md
+              Generate codebase-grounded technical documents • Edit in browser •
+              Export as .md
             </div>
           </div>
 
