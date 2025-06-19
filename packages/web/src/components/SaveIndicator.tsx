@@ -4,12 +4,14 @@ interface SaveIndicatorProps {
   state: AutosaveState;
   lastSaved: Date | null;
   error: string | null;
+  onClearOfflineSave?: () => void;
 }
 
 export default function SaveIndicator({
   state,
   lastSaved,
   error,
+  onClearOfflineSave,
 }: SaveIndicatorProps) {
   const formatTime = (date: Date) => {
     return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
@@ -50,9 +52,14 @@ export default function SaveIndicator({
   const statusText = getStatusText();
   if (!statusText) return null;
 
+  const isConflictError =
+    state === "error" && error === "Document was updated elsewhere";
+
   return (
     <div
-      className={`fixed bottom-4 right-4 px-3 py-2 rounded-md bg-white shadow-lg border ${getStatusColor()} text-sm font-medium`}
+      className={`fixed bottom-4 right-4 px-3 py-2 rounded-md bg-white shadow-lg border ${getStatusColor()} text-sm font-medium ${
+        isConflictError ? "flex items-center gap-2" : ""
+      }`}
       role="status"
       aria-live="polite"
       title={error || undefined}
@@ -79,6 +86,14 @@ export default function SaveIndicator({
         </svg>
       )}
       {statusText}
+      {isConflictError && onClearOfflineSave && (
+        <button
+          onClick={onClearOfflineSave}
+          className="ml-2 px-2 py-1 text-xs bg-red-600 text-white rounded hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500"
+        >
+          Reset to server version
+        </button>
+      )}
     </div>
   );
 }

@@ -13,10 +13,11 @@ export function docRoutes(app: FastifyInstance) {
   app.put("/api/doc/:id", async (req, res) => {
     const { id } = req.params as { id: string };
     const { userId } = z.object({ userId: z.string() }).parse(req.auth);
-    const { content, updatedAt } = z
+    const { content, updatedAt, clientId } = z
       .object({
         content: z.string().max(1024 * 1024), // 1MB limit
-        updatedAt: z.string().optional(),
+        updatedAt: z.string(),
+        clientId: z.string(),
       })
       .parse(req.body);
 
@@ -45,12 +46,16 @@ export function docRoutes(app: FastifyInstance) {
       data: { content },
     });
 
-    // Broadcast the save event to other connected clients
-    broadcastToDoc(id, {
-      type: "user-save",
-      content: updatedDoc.content,
-      updatedAt: updatedDoc.updatedAt.toISOString(),
-    });
+    // Broadcast the save event to other connected clients (excluding sender)
+    broadcastToDoc(
+      id,
+      {
+        type: "user-save",
+        content: updatedDoc.content,
+        updatedAt: updatedDoc.updatedAt.toISOString(),
+      },
+      clientId,
+    );
 
     return {
       updatedAt: updatedDoc.updatedAt.toISOString(),

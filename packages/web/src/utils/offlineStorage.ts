@@ -1,18 +1,16 @@
-interface QueuedSave {
-  id: string;
+interface OfflineSave {
   docId: string;
   content: string;
-  timestamp: number;
+  updatedAt: string; // Server's last known updatedAt timestamp
   attempts: number;
 }
 
-const DB_NAME = "autosave-offline-queue";
-const DB_VERSION = 1;
-const STORE_NAME = "saves";
-const MAX_QUEUE_SIZE = 20;
+const DB_NAME = "autosave-offline-storage";
+const DB_VERSION = 2;
+const STORE_NAME = "latest-saves";
 const MAX_ATTEMPTS = 3;
 
-class OfflineQueue {
+class OfflineStorage {
   private db: IDBDatabase | null = null;
 
   async init(): Promise<void> {
@@ -32,24 +30,32 @@ class OfflineQueue {
 
       request.onupgradeneeded = (event) => {
         const db = (event.target as IDBOpenDBRequest).result;
+
+        // Delete old store if it exists
+        if (db.objectStoreNames.contains("saves")) {
+          db.deleteObjectStore("saves");
+        }
+
         if (!db.objectStoreNames.contains(STORE_NAME)) {
-          const store = db.createObjectStore(STORE_NAME, { keyPath: "id" });
-          store.createIndex("docId", "docId", { unique: false });
-          store.createIndex("timestamp", "timestamp", { unique: false });
+          // Use docId as the key - we only store one save per document
+          db.createObjectStore(STORE_NAME, { keyPath: "docId" });
         }
       };
     });
   }
 
-  async addSave(docId: string, content: string): Promise<void> {
+  async saveDraft(
+    docId: string,
+    content: string,
+    updatedAt: string,
+  ): Promise<void> {
     if (typeof indexedDB === "undefined") return;
     if (!this.db) await this.init();
 
-    const save: QueuedSave = {
-      id: `${docId}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+    const save: OfflineSave = {
       docId,
       content,
-      timestamp: Date.now(),
+      updatedAt,
       attempts: 0,
     };
 
@@ -60,14 +66,12 @@ class OfflineQueue {
       transaction.onerror = () => reject(transaction.error);
       transaction.oncomplete = () => resolve();
 
-      // Clean up old saves to maintain queue size
-      this.cleanupOldSaves(store);
-
-      store.add(save);
+      // put() will update if exists, insert if new
+      store.put(save);
     });
   }
 
-  async getPendingSaves(): Promise<QueuedSave[]> {
+  async getAllOfflineSaves(): Promise<OfflineSave[]> {
     if (typeof indexedDB === "undefined") return [];
     if (!this.db) await this.init();
 
@@ -78,46 +82,44 @@ class OfflineQueue {
 
       request.onerror = () => reject(request.error);
       request.onsuccess = () => {
-        const saves = request.result as QueuedSave[];
-        // Sort by timestamp to process oldest first
-        saves.sort((a, b) => a.timestamp - b.timestamp);
+        const saves = request.result as OfflineSave[];
         resolve(saves);
       };
     });
   }
 
-  async removeSave(id: string): Promise<void> {
+  async removeSave(docId: string): Promise<void> {
     if (typeof indexedDB === "undefined") return;
     if (!this.db) await this.init();
 
     return new Promise((resolve, reject) => {
       const transaction = this.db!.transaction([STORE_NAME], "readwrite");
       const store = transaction.objectStore(STORE_NAME);
-      const request = store.delete(id);
+      const request = store.delete(docId);
 
       request.onerror = () => reject(request.error);
       request.onsuccess = () => resolve();
     });
   }
 
-  async incrementAttempts(id: string): Promise<void> {
+  async incrementAttempts(docId: string): Promise<void> {
     if (typeof indexedDB === "undefined") return;
     if (!this.db) await this.init();
 
     return new Promise((resolve, reject) => {
       const transaction = this.db!.transaction([STORE_NAME], "readwrite");
       const store = transaction.objectStore(STORE_NAME);
-      const getRequest = store.get(id);
+      const getRequest = store.get(docId);
 
       getRequest.onerror = () => reject(getRequest.error);
       getRequest.onsuccess = () => {
-        const save = getRequest.result as QueuedSave;
+        const save = getRequest.result as OfflineSave;
         if (save) {
           save.attempts += 1;
 
           // Remove if max attempts reached
           if (save.attempts >= MAX_ATTEMPTS) {
-            store.delete(id);
+            store.delete(docId);
           } else {
             store.put(save);
           }
@@ -127,25 +129,36 @@ class OfflineQueue {
     });
   }
 
-  private cleanupOldSaves(store: IDBObjectStore): void {
-    const countRequest = store.count();
-    countRequest.onsuccess = () => {
-      if (countRequest.result >= MAX_QUEUE_SIZE) {
-        const index = store.index("timestamp");
-        const cursorRequest = index.openCursor();
-        let deleted = 0;
-        const toDelete = countRequest.result - MAX_QUEUE_SIZE + 1;
+  // Update the saved content and timestamp for a document
+  async updateSave(
+    docId: string,
+    content: string,
+    updatedAt: string,
+  ): Promise<void> {
+    if (typeof indexedDB === "undefined") return;
+    if (!this.db) await this.init();
 
-        cursorRequest.onsuccess = (event) => {
-          const cursor = (event.target as IDBRequest).result;
-          if (cursor && deleted < toDelete) {
-            store.delete(cursor.primaryKey);
-            deleted++;
-            cursor.continue();
-          }
-        };
-      }
-    };
+    return new Promise((resolve, reject) => {
+      const transaction = this.db!.transaction([STORE_NAME], "readwrite");
+      const store = transaction.objectStore(STORE_NAME);
+      const getRequest = store.get(docId);
+
+      getRequest.onerror = () => reject(getRequest.error);
+      getRequest.onsuccess = () => {
+        const save = getRequest.result as OfflineSave;
+        if (save) {
+          // Update content and timestamp, reset attempts
+          save.content = content;
+          save.updatedAt = updatedAt;
+          save.attempts = 0;
+          store.put(save);
+        } else {
+          // Create new save if doesn't exist
+          store.put({ docId, content, updatedAt, attempts: 0 });
+        }
+        resolve();
+      };
+    });
   }
 
   async clear(): Promise<void> {
@@ -163,4 +176,4 @@ class OfflineQueue {
   }
 }
 
-export const offlineQueue = new OfflineQueue();
+export const offlineStorage = new OfflineStorage();

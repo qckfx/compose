@@ -12,6 +12,11 @@ import { useAutosave } from "@/hooks/useAutosave";
 import SaveIndicator from "../SaveIndicator";
 import "./tiptap-editor.css";
 
+// Generate a unique client ID for this editor instance
+const generateClientId = () => {
+  return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+};
+
 export default function TipTapEditor({
   docId,
   initialContent,
@@ -22,16 +27,21 @@ export default function TipTapEditor({
 }: {
   docId: string;
   initialContent: string;
-  initialUpdatedAt?: string | null;
+  initialUpdatedAt: string;
   onContentChange?: (newContent: string) => void;
   onUserContentChange?: (newContent: string) => void;
   heading?: string;
 }) {
   const wsRef = useRef<WebSocket | null>(null);
+  const clientIdRef = useRef<string>(generateClientId());
   const commentsEnabled = useFeatureFlagEnabled("comments");
 
   // Initialize autosave hook
-  const autosave = useAutosave({ docId, initialUpdatedAt });
+  const autosave = useAutosave({
+    docId,
+    initialUpdatedAt,
+    clientId: clientIdRef.current,
+  });
 
   const editor = useEditor({
     extensions: [StarterKit, CommentMark, Markdown],
@@ -77,7 +87,9 @@ export default function TipTapEditor({
 
   useEffect(() => {
     const protocol = location.protocol === "https:" ? "wss:" : "ws:";
-    const ws = new WebSocket(`${protocol}//${location.host}/api/ws/${docId}`);
+    const ws = new WebSocket(
+      `${protocol}//${location.host}/api/ws/${docId}?clientId=${clientIdRef.current}`,
+    );
     wsRef.current = ws;
 
     ws.onmessage = async (ev) => {
@@ -211,6 +223,7 @@ export default function TipTapEditor({
         state={autosave.state}
         lastSaved={autosave.lastSaved}
         error={autosave.error}
+        onClearOfflineSave={autosave.clearOfflineSave}
       />
     </div>
   );

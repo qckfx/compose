@@ -1,13 +1,14 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AxiosError } from "axios";
 import apiClient from "@/api/apiClient";
-import { offlineQueue } from "@/utils/offlineQueue";
+import { offlineStorage } from "@/utils/offlineStorage";
 
 export type AutosaveState = "idle" | "saving" | "saved" | "error" | "offline";
 
 interface UseAutosaveOptions {
   docId: string;
-  initialUpdatedAt?: string | null;
+  initialUpdatedAt: string;
+  clientId: string;
   debounceMs?: number;
   maxCharacters?: number;
 }
@@ -15,13 +16,12 @@ interface UseAutosaveOptions {
 export function useAutosave({
   docId,
   initialUpdatedAt,
+  clientId,
   debounceMs = 5000,
   maxCharacters = 500,
 }: UseAutosaveOptions) {
   const [state, setState] = useState<AutosaveState>("idle");
-  const [lastSaved, setLastSaved] = useState<Date | null>(
-    initialUpdatedAt ? new Date(initialUpdatedAt) : null,
-  );
+  const [lastSaved, setLastSaved] = useState<Date>(new Date(initialUpdatedAt));
   const [error, setError] = useState<string | null>(null);
 
   const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
@@ -30,25 +30,52 @@ export function useAutosave({
   const characterCountRef = useRef<number>(0);
   const isOnlineRef = useRef<boolean>(true);
 
-  // Process offline queue when coming back online
-  const processOfflineQueue = useCallback(async () => {
+  // Process offline saves when coming back online
+  const processOfflineSaves = useCallback(async () => {
     try {
-      const pendingSaves = await offlineQueue.getPendingSaves();
+      const pendingSaves = await offlineStorage.getAllOfflineSaves();
 
       for (const save of pendingSaves) {
         try {
-          await apiClient.put(`/api/doc/${save.docId}`, {
+          const response = await apiClient.put(`/api/doc/${save.docId}`, {
             content: save.content,
+            updatedAt: save.updatedAt,
+            clientId,
           });
-          await offlineQueue.removeSave(save.id);
-        } catch {
-          await offlineQueue.incrementAttempts(save.id);
+
+          // Update our timestamp if this was our document
+          if (save.docId === docId) {
+            const savedAt = new Date(response.data.updatedAt);
+            setLastSaved(savedAt);
+          }
+
+          await offlineStorage.removeSave(save.docId);
+        } catch (err) {
+          if (err instanceof AxiosError) {
+            if (err.response?.status === 409) {
+              // Conflict - only show error for current doc, silently skip others
+              if (save.docId === docId) {
+                setError("Document was updated elsewhere");
+                setState("error");
+                // Keep the save - user needs to decide what to do
+              } else {
+                // For other docs, just remove the conflict
+                await offlineStorage.removeSave(save.docId);
+              }
+            } else {
+              // Server error or network error - keep it and increment attempts
+              await offlineStorage.incrementAttempts(save.docId);
+            }
+          } else {
+            // Unknown error - keep it and increment attempts
+            await offlineStorage.incrementAttempts(save.docId);
+          }
         }
       }
     } catch (err) {
-      console.error("Error processing offline queue:", err);
+      console.error("Error processing offline saves:", err);
     }
-  }, []);
+  }, [docId]);
 
   // Track online/offline status
   useEffect(() => {
@@ -61,8 +88,8 @@ export function useAutosave({
       isOnlineRef.current = true;
       if (state === "offline") {
         setState("idle");
-        // Process any queued saves
-        await processOfflineQueue();
+        // Process any offline saves
+        await processOfflineSaves();
       }
     };
 
@@ -80,7 +107,10 @@ export function useAutosave({
         window.removeEventListener("offline", handleOffline);
       };
     }
-  }, [state, processOfflineQueue]);
+  }, [state, processOfflineSaves]);
+
+  // Note: Offline saves are now handled in DocView to show the right content
+  // We only process them here when coming back online
 
   const saveContent = useCallback(
     async (content: string) => {
@@ -92,15 +122,15 @@ export function useAutosave({
       if (!isOnlineRef.current) {
         // Queue the save for when we're back online
         try {
-          await offlineQueue.addSave(
+          await offlineStorage.saveDraft(
             docId,
             content,
-            lastSaved?.toISOString() || "",
+            lastSaved.toISOString(),
           );
           setState("offline");
         } catch (err) {
-          console.error("Failed to queue offline save:", err);
-          setError("Failed to queue save");
+          console.error("Failed to store offline save:", err);
+          setError("Failed to save offline");
           setState("error");
         }
         return;
@@ -112,7 +142,8 @@ export function useAutosave({
 
         const response = await apiClient.put(`/api/doc/${docId}`, {
           content,
-          updatedAt: lastSaved?.toISOString(),
+          updatedAt: lastSaved.toISOString(),
+          clientId,
         });
 
         lastSavedContentRef.current = content;
@@ -135,10 +166,10 @@ export function useAutosave({
         } else if (!isOnlineRef.current) {
           // Connection lost during save - queue it
           try {
-            await offlineQueue.addSave(
+            await offlineStorage.saveDraft(
               docId,
               content,
-              lastSaved?.toISOString() || "",
+              lastSaved.toISOString(),
             );
             setState("offline");
           } catch (queueErr) {
@@ -219,11 +250,40 @@ export function useAutosave({
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [forceSave]);
 
+  // Save any pending content before unload
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      // Check if we have unsaved content
+      if (contentRef.current !== lastSavedContentRef.current) {
+        // Save to offline storage - will be synced when user returns
+        offlineStorage
+          .saveDraft(docId, contentRef.current, lastSaved.toISOString())
+          .catch((err) => {
+            console.error("Failed to save draft on unload:", err);
+          });
+      }
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [docId, lastSaved]);
+
+  const clearOfflineSave = useCallback(async () => {
+    try {
+      await offlineStorage.removeSave(docId);
+      setError(null);
+      setState("idle");
+    } catch (err) {
+      console.error("Failed to clear offline save:", err);
+    }
+  }, [docId]);
+
   return {
     state,
     lastSaved,
     error,
     triggerSave,
     forceSave,
+    clearOfflineSave,
   };
 }

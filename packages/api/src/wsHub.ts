@@ -1,16 +1,21 @@
 import { WebSocket } from "@fastify/websocket";
 import { FastifyInstance } from "fastify";
 
-type Conn = WebSocket & { isAlive: boolean };
+type Conn = WebSocket & { isAlive: boolean; clientId?: string };
 // Store **all** open WebSocket connections per docId so broadcasts reach every client.
 export const sockets = new Map<string, Set<Conn>>();
 
 export function registerWsRoute(fastify: FastifyInstance) {
-  fastify.get("/api/ws/:id", { websocket: true }, (socket, req) => {
+  fastify.get<{
+    Params: { id: string };
+    Querystring: { clientId?: string };
+  }>("/api/ws/:id", { websocket: true }, (socket, req) => {
     fastify.log.info("New connection", req.params);
-    const id = (req.params as any).id as string;
+    const { id } = req.params;
+    const { clientId } = req.query;
     const conn = socket as Conn;
     conn.isAlive = true; // mark as alive on connect
+    conn.clientId = clientId;
 
     // Add the connection to the set for this doc id (create set if first)
     const set = sockets.get(id);
@@ -42,13 +47,17 @@ export function registerWsRoute(fastify: FastifyInstance) {
   }, 30_000);
 }
 
-export function broadcastToDoc(docId: string, message: any) {
+export function broadcastToDoc(
+  docId: string,
+  message: any,
+  excludeClientId?: string,
+) {
   const connections = sockets.get(docId);
   if (!connections) return;
 
   const messageStr = JSON.stringify(message);
   connections.forEach((conn) => {
-    if (conn.readyState === conn.OPEN) {
+    if (conn.readyState === conn.OPEN && conn.clientId !== excludeClientId) {
       conn.send(messageStr);
     }
   });
