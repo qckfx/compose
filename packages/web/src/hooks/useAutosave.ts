@@ -7,17 +7,21 @@ export type AutosaveState = "idle" | "saving" | "saved" | "error" | "offline";
 
 interface UseAutosaveOptions {
   docId: string;
+  initialUpdatedAt?: string | null;
   debounceMs?: number;
   maxCharacters?: number;
 }
 
 export function useAutosave({
   docId,
+  initialUpdatedAt,
   debounceMs = 5000,
   maxCharacters = 500,
 }: UseAutosaveOptions) {
   const [state, setState] = useState<AutosaveState>("idle");
-  const [lastSaved, setLastSaved] = useState<Date | null>(null);
+  const [lastSaved, setLastSaved] = useState<Date | null>(
+    initialUpdatedAt ? new Date(initialUpdatedAt) : null,
+  );
   const [error, setError] = useState<string | null>(null);
 
   const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
@@ -37,7 +41,7 @@ export function useAutosave({
             content: save.content,
           });
           await offlineQueue.removeSave(save.id);
-        } catch (err) {
+        } catch {
           await offlineQueue.incrementAttempts(save.id);
         }
       }
@@ -88,7 +92,11 @@ export function useAutosave({
       if (!isOnlineRef.current) {
         // Queue the save for when we're back online
         try {
-          await offlineQueue.addSave(docId, content);
+          await offlineQueue.addSave(
+            docId,
+            content,
+            lastSaved?.toISOString() || "",
+          );
           setState("offline");
         } catch (err) {
           console.error("Failed to queue offline save:", err);
@@ -102,13 +110,14 @@ export function useAutosave({
         setState("saving");
         setError(null);
 
-        await apiClient.put(`/api/doc/${docId}`, {
+        const response = await apiClient.put(`/api/doc/${docId}`, {
           content,
           updatedAt: lastSaved?.toISOString(),
         });
 
         lastSavedContentRef.current = content;
-        const savedAt = new Date();
+        // Use the server's timestamp to stay in sync
+        const savedAt = new Date(response.data.updatedAt);
         setLastSaved(savedAt);
         setState("saved");
 
@@ -126,7 +135,11 @@ export function useAutosave({
         } else if (!isOnlineRef.current) {
           // Connection lost during save - queue it
           try {
-            await offlineQueue.addSave(docId, content);
+            await offlineQueue.addSave(
+              docId,
+              content,
+              lastSaved?.toISOString() || "",
+            );
             setState("offline");
           } catch (queueErr) {
             console.error(

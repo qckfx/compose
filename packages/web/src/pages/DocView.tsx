@@ -13,6 +13,7 @@ const DOC_LOADING_STATES = [
 export default function DocView() {
   const { id } = useParams<{ id: string }>();
   const [content, setContent] = useState<string>("");
+  const [initialUpdatedAt, setInitialUpdatedAt] = useState<string | null>(null);
   const navigate = useNavigate();
 
   // ❶ fetch persisted content once
@@ -30,6 +31,7 @@ export default function DocView() {
       .then((d) => {
         if (!cancelled) {
           setContent(d.content ?? "");
+          setInitialUpdatedAt(d.updatedAt ?? null);
         }
       })
       .catch((err) => {
@@ -52,6 +54,7 @@ export default function DocView() {
         <TipTapEditor
           docId={id!}
           initialContent={content}
+          initialUpdatedAt={initialUpdatedAt}
           onContentChange={setContent}
           heading="Editing draft"
         />

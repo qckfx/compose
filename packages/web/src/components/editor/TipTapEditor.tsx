@@ -15,12 +15,14 @@ import "./tiptap-editor.css";
 export default function TipTapEditor({
   docId,
   initialContent,
+  initialUpdatedAt,
   onContentChange,
   onUserContentChange,
   heading,
 }: {
   docId: string;
   initialContent: string;
+  initialUpdatedAt?: string | null;
   onContentChange?: (newContent: string) => void;
   onUserContentChange?: (newContent: string) => void;
   heading?: string;
@@ -29,7 +31,7 @@ export default function TipTapEditor({
   const commentsEnabled = useFeatureFlagEnabled("comments");
 
   // Initialize autosave hook
-  const autosave = useAutosave({ docId });
+  const autosave = useAutosave({ docId, initialUpdatedAt });
 
   const editor = useEditor({
     extensions: [StarterKit, CommentMark, Markdown],
