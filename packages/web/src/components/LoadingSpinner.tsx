@@ -4,12 +4,14 @@ interface LoadingSpinnerProps {
   states?: string[];
   cycleTime?: number;
   overlay?: boolean;
+  loop?: boolean;
 }
 
 const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
   states = [],
   cycleTime = 3500,
   overlay = false,
+  loop = true,
 }) => {
   const [currentState, setCurrentState] = useState(0);
 
@@ -17,11 +19,14 @@ const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
     if (states.length <= 1) return;
 
     const interval = setInterval(() => {
-      setCurrentState((prev) => (prev + 1) % states.length);
+      setCurrentState((prev) => {
+        const next = prev + 1;
+        return loop ? next % states.length : Math.min(next, states.length - 1);
+      });
     }, cycleTime);
 
     return () => clearInterval(interval);
-  }, [states, cycleTime]);
+  }, [states, cycleTime, loop]);
 
   const spinnerContent = (
     <div className="text-center">

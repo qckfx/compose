@@ -24,6 +24,7 @@ export default function TipTapEditor({
   onContentChange,
   onUserContentChange,
   heading,
+  documentLoaded = true,
 }: {
   docId: string;
   initialContent: string;
@@ -31,6 +32,7 @@ export default function TipTapEditor({
   onContentChange?: (newContent: string) => void;
   onUserContentChange?: (newContent: string) => void;
   heading?: string;
+  documentLoaded?: boolean;
 }) {
   const wsRef = useRef<WebSocket | null>(null);
   const clientIdRef = useRef<string>(generateClientId());
@@ -224,6 +226,7 @@ export default function TipTapEditor({
         lastSaved={autosave.lastSaved}
         error={autosave.error}
         onClearOfflineSave={autosave.clearOfflineSave}
+        documentLoaded={documentLoaded}
       />
     </div>
   );

@@ -5,6 +5,7 @@ interface SaveIndicatorProps {
   lastSaved: Date | null;
   error: string | null;
   onClearOfflineSave?: () => void;
+  documentLoaded?: boolean;
 }
 
 export default function SaveIndicator({
@@ -12,6 +13,7 @@ export default function SaveIndicator({
   lastSaved,
   error,
   onClearOfflineSave,
+  documentLoaded = true,
 }: SaveIndicatorProps) {
   const formatTime = (date: Date) => {
     return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
@@ -50,7 +52,7 @@ export default function SaveIndicator({
   };
 
   const statusText = getStatusText();
-  if (!statusText) return null;
+  if (!statusText || !documentLoaded) return null;
 
   const isConflictError =
     state === "error" && error === "Document was updated elsewhere";

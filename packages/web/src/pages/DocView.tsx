@@ -7,8 +7,13 @@ import { offlineStorage } from "@/utils/offlineStorage";
 const DOC_LOADING_STATES = [
   "Cloning repository...",
   "Reading files...",
+  "Analyzing codebase...",
+  "Understanding context...",
   "Thinking...",
+  "Organizing thoughts...",
   "Drafting v1...",
+  "Refining content...",
+  "Almost done...",
 ];
 
 export default function DocView() {
@@ -135,14 +140,16 @@ export default function DocView() {
             initialUpdatedAt={localUpdatedAt}
             onContentChange={setContent}
             heading="Editing draft"
+            documentLoaded={!!(content && localUpdatedAt)}
           />
         )}
       </div>
       {(!content || !localUpdatedAt) && (
         <LoadingSpinner
           states={DOC_LOADING_STATES}
-          cycleTime={4500 * 8}
+          cycleTime={6000}
           overlay
+          loop={false}
         />
       )}
     </div>
