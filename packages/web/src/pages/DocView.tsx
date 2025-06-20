@@ -7,12 +7,22 @@ import { offlineStorage } from "@/utils/offlineStorage";
 const DOC_LOADING_STATES = [
   "Cloning repository...",
   "Reading files...",
+  "Scanning dependencies...",
+  "Mapping file structure...",
   "Analyzing codebase...",
+  "Identifying patterns...",
   "Understanding context...",
+  "Processing documentation...",
+  "Synthesizing insights...",
   "Thinking...",
+  "Structuring outline...",
   "Organizing thoughts...",
   "Drafting v1...",
+  "Writing sections...",
+  "Reviewing for clarity...",
   "Refining content...",
+  "Adding final touches...",
+  "Polishing content...",
   "Almost done...",
 ];
 
@@ -147,7 +157,7 @@ export default function DocView() {
       {(!content || !localUpdatedAt) && (
         <LoadingSpinner
           states={DOC_LOADING_STATES}
-          cycleTime={6000}
+          cycleTime={10000}
           overlay
           loop={false}
         />
